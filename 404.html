@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found · Tank Yard</title>
+<base href="/tankyard-site/">
+<meta name="robots" content="noindex">
+<link rel="icon" href="img/tankyard.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/site.css">
+<script>
+try {
+  var theme = localStorage.getItem("tankyard-theme");
+  if (theme !== "light" && theme !== "dark") theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  document.documentElement.dataset.theme = theme;
+} catch (e) {
+  document.documentElement.dataset.theme = "light";
+}
+</script>
+</head>
+<body>
+<div class="page-bg" style="opacity:1" aria-hidden="true"></div>
+<main class="death">
+  <svg class="wreck" viewBox="-30 -30 76 60" width="114" height="90" aria-hidden="true">
+    <rect x="4" y="-8.5" width="38" height="17" fill="#999" stroke="#555" stroke-width="3" stroke-linejoin="round"/>
+    <circle r="22" fill="#00b2e1" stroke="#555" stroke-width="3"/>
+  </svg>
+  <p class="by" id="by">Destroyed by a missing page</p>
+  <h1>You died</h1>
+  <p class="score">Score: 404    Kills: 0</p>
+  <p class="press">Press Enter or click to respawn</p>
+  <a class="btn primary" href="./">Respawn</a>
+  <a class="btn small" href="https://github.com/RobertFlexx/tankyard/releases/latest">Latest release</a>
+</main>
+<script>
+var missing = location.pathname.replace(/^\/tankyard-site/, "");
+try {
+  missing = decodeURIComponent(missing);
+} catch (e) {}
+if (missing.length > 1) document.getElementById("by").textContent = "Destroyed by " + (missing.length > 48 ? missing.slice(0, 47) + "…" : missing);
+function respawn() {
+  location.href = document.baseURI;
+}
+addEventListener("keydown", function (event) {
+  if (event.key === "Enter" && !event.target.closest("a")) respawn();
+});
+document.querySelector(".death").addEventListener("click", function (event) {
+  if (!event.target.closest("a")) respawn();
+});
+</script>
+</body>
+</html>

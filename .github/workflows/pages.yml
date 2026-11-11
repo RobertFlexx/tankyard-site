@@ -1,0 +1,99 @@
+# Publishes the site, and checks GitHub every hour for a new Tank Yard release.
+# The page asks GitHub for the latest release on every visit; data/release.json
+# is the copy it falls back on, and it carries the notes of earlier releases.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  # Lets the game repository announce a release straight away, given a token:
+  # gh api repos/RobertFlexx/tankyard-site/dispatches -f event_type=tankyard-release
+  repository_dispatch:
+    types: [tankyard-release]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.decide.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Fetch the latest Tank Yard release
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 tools/build_data.py --release-only
+          if git diff --quiet -- data/release.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Keep the new release data
+        if: steps.release.outputs.changed == 'true'
+        run: |
+          tag=$(python3 -c 'import json; print(json.load(open("data/release.json"))["tag_name"])')
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add data/release.json
+          git commit -m "Update release data for Tank Yard $tag"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Decide whether to publish
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CHANGED: ${{ steps.release.outputs.changed }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          if ! gh api "repos/$GITHUB_REPOSITORY/pages" --silent 2>/dev/null; then
+            echo "::notice::GitHub Pages isn't turned on for this repository, so nothing was published."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT" = schedule ] && [ "$CHANGED" != true ]; then
+            echo "No new release."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: refresh
+    if: needs.refresh.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # main, not the triggering commit, so new release data is included.
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Collect the site
+        run: |
+          mkdir _site
+          cp -r index.html 404.html css data fonts img js media _site/
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v5

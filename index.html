@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tank Yard</title>
+<meta name="description" content="Tank Yard is a free, open-source tank arena for Windows, macOS and Linux: 111 tanks, 14 bosses, 16 modes, an arena editor and Luau mods.">
+<meta name="theme-color" content="#cdcdcd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1f262e" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://robertflexx.github.io/tankyard-site/">
+<link rel="icon" href="img/tankyard.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/tankyard-256.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tank Yard">
+<meta property="og:description" content="A free tank arena for Windows, macOS and Linux. 111 tanks, 14 bosses, 16 modes and an arena editor.">
+<meta property="og:url" content="https://robertflexx.github.io/tankyard-site/">
+<meta property="og:image" content="https://robertflexx.github.io/tankyard-site/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="fonts/dejavu-sans-bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="data/tanks.json" as="fetch" crossorigin>
+<link rel="stylesheet" href="css/site.css">
+<script>
+try {
+  var theme = localStorage.getItem("tankyard-theme");
+  if (theme !== "light" && theme !== "dark") theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  document.documentElement.dataset.theme = theme;
+} catch (e) {
+  document.documentElement.dataset.theme = "light";
+}
+</script>
+<script type="module" src="js/main.js"></script>
+</head>
+<body>
+<a class="skip btn small" href="#install">Skip to the install steps</a>
+<canvas id="arena" aria-hidden="true"></canvas>
+<div class="page-bg" id="page-bg" aria-hidden="true"></div>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<header class="menu" id="top">
+  <div class="fps" aria-hidden="true"><span id="fps">60</span> FPS</div>
+  <a class="btn small credits-link" href="#credits">Credits</a>
+  <h1>Tank Yard</h1>
+  <p class="subtitle">A free tank arena for Windows, macOS and Linux</p>
+  <div class="tank-slot" id="tank-slot" aria-hidden="true"></div>
+
+  <div class="pane">
+    <span class="label" id="release-label">Latest release</span>
+    <a class="field release-field" id="release-field" href="#whats-new" aria-describedby="release-label">
+      <span><span class="version" id="release-version">v0.15.2</span><span class="date" id="release-date">Nov 11, 2026</span></span>
+      <span class="notes">What's new ›</span>
+    </a>
+
+    <span class="label second" id="platform-label">Download for</span>
+    <button class="server-card" id="platform-card" type="button" aria-expanded="false" aria-controls="packages" aria-describedby="platform-label">
+      <span class="name" id="platform-name">Your computer</span>
+      <span class="meta" id="platform-meta">All downloads</span>
+      <span class="chevron" aria-hidden="true"></span>
+    </button>
+    <ul class="lobbies" id="packages" hidden></ul>
+
+    <div class="play-row">
+      <a class="btn primary play" id="download" href="https://github.com/RobertFlexx/tankyard/releases/latest">Download <span class="key">[Enter]</span></a>
+      <a class="btn side" href="#install">Install steps</a>
+    </div>
+    <nav class="four" aria-label="Sections">
+      <a class="btn" href="#workshop">Map editor</a>
+      <a class="btn" href="#tanks">Tank tree</a>
+      <a class="btn" href="#modes">Game modes</a>
+      <a class="btn" href="#servers">Host server</a>
+    </nav>
+    <nav class="five" aria-label="More">
+      <a class="btn small" href="#whats-new">What's new</a>
+      <a class="btn small" href="#bosses">Bosses</a>
+      <a class="btn small" href="#mods">Mods</a>
+      <a class="btn small" href="#controls">Controls</a>
+      <a class="btn small" href="#practice">Practice</a>
+    </nav>
+    <div class="theme-row">
+      <button class="btn small" id="theme" type="button">Light  <span class="key">[F9]</span></button>
+      <span class="status" id="status">111 tanks  ·  14 bosses  ·  16 modes</span>
+    </div>
+    <div class="bottom-row">
+      <a class="btn small" href="https://github.com/RobertFlexx/tankyard/tree/main/docs">Guides</a>
+      <a class="btn small" href="https://github.com/RobertFlexx/tankyard/releases">All releases</a>
+      <a class="btn small" href="https://github.com/RobertFlexx/tankyard">Source</a>
+    </div>
+  </div>
+
+  <a class="badge" id="release-badge" href="#whats-new">
+    <img src="img/tankyard.svg" alt="" width="44" height="44">
+    <strong id="badge-title">Tank Yard v0.15.2</strong>
+    <span id="badge-text">Menus follow your frame limit, and the Workshop tutorial is in the docs.</span>
+  </a>
+
+  <div class="hud" id="hud" hidden aria-hidden="true">
+    <span class="capsule score"><span class="fill-track"><span class="fill"></span></span><span class="text">Score: 0</span></span>
+    <span class="capsule level"><span class="fill-track"><span class="fill"></span></span><span class="text">Lvl 1 Basic Tank</span></span>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap brand-head">
+    <p class="brand" aria-hidden="true">TANK YARD</p>
+  </div>
+  <div class="tabs-bar" id="tabs-bar">
+    <nav class="wrap tabs" id="tabs" aria-label="Pages">
+      <a class="btn" href="#install">Install</a>
+      <a class="btn" href="#workshop">Arena Workshop</a>
+      <a class="btn" href="#tanks">Tank tree</a>
+      <a class="btn" href="#bosses">Bosses</a>
+      <a class="btn" href="#modes">Modes</a>
+      <a class="btn" href="#servers">Servers</a>
+      <a class="btn" href="#mods">Mods</a>
+      <a class="btn" href="#controls">Controls</a>
+      <a class="btn" href="#whats-new">What's new</a>
+    </nav>
+  </div>
+
+  <section class="page wrap" id="install" aria-labelledby="install-title">
+    <div class="page-head">
+      <h2 id="install-title">Install</h2>
+      <span class="count" id="install-count">Latest release</span>
+      <div class="actions os-tabs" id="os-tabs" role="tablist" aria-label="System">
+        <button class="btn" type="button" role="tab" data-os="windows">Windows</button>
+        <button class="btn" type="button" role="tab" data-os="mac">macOS</button>
+        <button class="btn" type="button" role="tab" data-os="linux">Linux</button>
+      </div>
+    </div>
+    <div class="methods" id="methods" aria-label="Install method"></div>
+    <div class="install-grid">
+      <ol class="steps" id="steps"></ol>
+      <div class="scene-col">
+        <div class="scene" id="scene" role="img" aria-label="Animation of the current install step"><div class="stage" id="stage"></div></div>
+        <div class="scene-bar">
+          <button class="btn small" id="scene-prev" type="button" aria-label="Previous step">‹</button>
+          <span class="capsule" id="scene-track"><span class="fill-track"><span class="fill" id="scene-fill"></span></span><span class="segments" id="scene-segments"></span></span>
+          <span class="counter" id="scene-counter">Step 1 of 4</span>
+          <span>
+            <button class="btn small" id="scene-play" type="button" aria-pressed="true">Pause</button>
+            <button class="btn small" id="scene-next" type="button" aria-label="Next step">›</button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <noscript>
+      <p class="lead">Windows: run the setup from the <a href="https://github.com/RobertFlexx/tankyard/releases/latest">latest release</a>. macOS: run <code>curl -fsSL https://github.com/RobertFlexx/tankyard/releases/latest/download/install-macos.sh | sh</code>. Linux: run <code>curl -fsSL https://github.com/RobertFlexx/tankyard/releases/latest/download/install.sh | sh</code>.</p>
+    </noscript>
+    <div class="requirements" id="requirements">
+      <div class="panel" data-os="windows">
+        <span class="label accent">Windows</span>
+        <p>64-bit Windows. The C runtime is included. PCs with ARM processors run the x64 build. Remove it from Installed apps; settings and progress are kept.</p>
+      </div>
+      <div class="panel" data-os="mac">
+        <span class="label accent">macOS</span>
+        <p>macOS 11 or newer. One universal build runs natively on Apple silicon and Intel Macs. The dedicated server, bundled mods and guides are inside Tank Yard.app.</p>
+      </div>
+      <div class="panel" data-os="linux">
+        <span class="label accent">Linux</span>
+        <p>x86-64 with glibc 2.31 or newer, or ARM64 with glibc 2.35 or newer. Uses your system's X11 and OpenGL libraries.</p>
+      </div>
+    </div>
+    <div class="verify panel">
+      Every download is listed with its SHA-256 checksum under <a href="#whats-new">What's new</a>, and the installers check it for you. Building from source needs Rust <span id="rust-version">1.88</span> or newer:
+      <div class="command"><code>git clone https://github.com/RobertFlexx/tankyard &amp;&amp; cd tankyard
+cargo build --locked --release --workspace
+./target/release/tankyard</code><button class="btn small" type="button" data-copy-prev>Copy</button></div>
+    </div>
+  </section>
+
+  <section class="page wrap" id="workshop" aria-labelledby="workshop-title">
+    <div class="page-head">
+      <h2 id="workshop-title">Arena Workshop</h2>
+      <span class="count">The map editor inside the game</span>
+    </div>
+    <p class="lead">Build arenas with blocks, pads, conveyors, portals and map logic, then test them in place. <span class="wide-only">This copy of the editor works: draw some walls, then press <b>Playtest</b>. The tour on the right is the real thing.</span><span class="narrow-only">The tour below is the real thing. On a larger screen, this section is also a working copy of the editor.</span></p>
+    <div class="workshop" id="ws">
+      <div class="ws-top">
+        <div class="ws-name"><small>ARENA WORKSHOP</small><b>My arena</b><em id="ws-state">Draft</em></div>
+        <button class="btn" type="button" id="ws-undo" disabled>Undo</button>
+        <button class="btn" type="button" id="ws-redo" disabled>Redo</button>
+        <span class="gap"></span>
+        <button class="btn" type="button" id="ws-new">New</button>
+        <button class="btn" type="button" id="ws-save">Save</button>
+        <button class="btn" type="button" id="ws-export">Export</button>
+        <span class="grow"></span>
+        <button class="btn" type="button" id="ws-help">Help <span class="key">F1</span></button>
+        <button class="btn" type="button" id="ws-here">Play here</button>
+        <button class="btn primary" type="button" id="ws-play">Playtest <span class="key">F5</span></button>
+        <a class="btn" href="#top">Back</a>
+      </div>
+      <div class="ws-canvas" id="ws-canvas" tabindex="0" aria-label="Arena editor canvas. Press 1 to build, 2 to edit, 3 to delete, F5 to playtest.">
+        <canvas id="ws-gl"></canvas>
+        <span class="ws-tag" id="ws-tag">Build · Slate</span>
+        <span class="ws-coords" id="ws-coords">0, 0  ·  100%</span>
+        <span class="ws-hint" id="ws-hint">Click to build, or press F1 for every shortcut.</span>
+        <span class="ws-play-banner" id="ws-banner" hidden>Playtest  ·  WASD to drive, click to fire, Esc to stop</span>
+      </div>
+      <aside class="ws-side" aria-label="Arena Workshop tour">
+        <div class="ws-tabs" id="ws-tabs"></div>
+        <div class="ws-player" id="ws-player">
+          <video id="ws-video" playsinline muted preload="none" poster="media/tutorial-poster.jpg" aria-label="Arena Workshop tutorial, 2 minutes 37 seconds">
+            <source src="media/arena-workshop-tutorial.webm" type='video/webm; codecs="vp9"'>
+            <source src="media/arena-workshop-tutorial.mp4" type="video/mp4">
+          </video>
+          <button class="big-play" id="ws-bigplay" type="button" aria-label="Play the tour"><span>▶</span></button>
+        </div>
+        <div class="ws-controls">
+          <button class="btn small" id="ws-vplay" type="button" aria-label="Play">▶</button>
+          <span class="ws-seek capsule" id="ws-seek" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="157" aria-valuenow="0"><span class="fill-track"><span class="fill" id="ws-progress"></span></span><span class="ticks" id="ws-ticks"></span></span>
+          <span class="time" id="ws-time">0:00</span>
+          <button class="btn small" id="ws-full" type="button">Full screen</button>
+          <button class="btn small" id="ws-big" type="button" aria-pressed="false">Wide</button>
+        </div>
+        <div class="ws-caption" id="ws-caption" aria-live="off"><small>Arena Workshop tour</small><span>Map editor on the main menu opens the Arena Workshop.</span></div>
+        <ol class="ws-chapters" id="ws-chapters"></ol>
+      </aside>
+      <div class="ws-dock">
+        <div class="ws-modes" role="radiogroup" aria-label="Tool">
+          <button class="btn on" type="button" data-mode="build" aria-pressed="true">Build<sup>1</sup></button>
+          <button class="btn" type="button" data-mode="edit" aria-pressed="false">Edit<sup>2</sup></button>
+          <button class="btn" type="button" data-mode="delete" aria-pressed="false">Delete<sup>3</sup></button>
+        </div>
+        <div class="ws-palette">
+          <div class="ws-cats" id="ws-cats">
+            <button class="btn small" type="button" data-cat="Blocks">Blocks</button>
+            <button class="btn small" type="button" data-cat="Pads">Pads</button>
+            <button class="btn small" type="button" data-cat="Decor">Decor</button>
+            <button class="btn small" type="button" data-cat="Logic">Logic</button>
+            <button class="btn small" type="button" data-cat="Markers">Markers</button>
+            <span class="ws-group">Group <button class="btn small" type="button" id="ws-gminus">−</button><b id="ws-gval">none</b><button class="btn small" type="button" id="ws-gplus">+</button><button class="btn small" type="button" id="ws-gfree">Free</button></span>
+          </div>
+          <div class="ws-tiles" id="ws-tiles"></div>
+        </div>
+        <div class="ws-opts">
+          <span class="ws-opt">Swipe <button class="toggle" type="button" role="switch" aria-checked="false" data-opt="swipe" aria-label="Swipe"></button></span>
+          <span class="ws-opt">Snap <button class="toggle" type="button" role="switch" aria-checked="true" data-opt="snap" aria-label="Snap"></button></span>
+          <button class="btn small" type="button" id="ws-grid">Grid 40</button>
+          <span class="ws-opt">Hidden <button class="toggle" type="button" role="switch" aria-checked="true" data-opt="hidden" aria-label="Show hidden"></button></span>
+          <span class="ws-opt">Groups <button class="toggle" type="button" role="switch" aria-checked="true" data-opt="groups" aria-label="Groups"></button></span>
+          <span class="ws-opt">Links <button class="toggle" type="button" role="switch" aria-checked="false" data-opt="links" aria-label="Links"></button></span>
+          <div class="ws-zoom">
+            <button class="btn small" type="button" data-zoom="-1">Zoom −</button>
+            <button class="btn small" type="button" data-zoom="1">Zoom +</button>
+            <button class="btn small" type="button" data-zoom="0">Fit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ws-under">
+      <div class="panel">
+        <span class="label accent">Build</span>
+        <p>Eight block styles, seven kinds of pad, decor with particle effects, and spawn, base and objective markers. Click for one grid cell, or drag to draw a wall of any size.</p>
+      </div>
+      <div class="panel">
+        <span class="label accent">Logic</span>
+        <p>Plates, timers, counters, gates and levers change groups of objects. P runs the logic in place; Shift+F5 playtests from the pointer.</p>
+      </div>
+      <div class="panel">
+        <span class="label accent">Share</span>
+        <p>Ctrl+S saves an editable project. Export makes a pack for the Mods page or a server. Plugin packs add tools written in Luau.</p>
+        <div class="links">
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md">Workshop guide</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/editor-plugins.md">Plugin guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page wrap" id="tanks" aria-labelledby="tanks-title">
+    <div class="page-head">
+      <h2 id="tanks-title">Tank tree</h2>
+      <span class="count" id="tank-count">111 tanks</span>
+    </div>
+    <div class="tree-grid">
+      <div>
+        <div class="tree-tools">
+          <label class="sr-only" for="tree-search">Find a tank</label>
+          <input class="field" id="tree-search" type="search" placeholder="Find a tank" autocomplete="off" spellcheck="false">
+          <span class="found" id="tree-found"></span>
+          <button class="btn small" type="button" id="tree-fit">Fit all</button>
+          <button class="btn small" type="button" id="tree-focus">Focus</button>
+        </div>
+        <div class="tree-view" id="tree-view">
+          <canvas id="tree" role="img" aria-label="Upgrade tree of every tank. Use the search field or the upgrade buttons beside it to move through it."></canvas>
+        </div>
+        <p class="tree-help" id="tree-help">Scroll to zoom · drag to explore · select a tank</p>
+      </div>
+      <article class="panel tree-detail" id="tree-detail" aria-live="polite"></article>
+    </div>
+  </section>
+
+  <section class="page wrap" id="bosses" aria-labelledby="bosses-title">
+    <div class="page-head">
+      <h2 id="bosses-title">Bosses</h2>
+      <span class="count">14 bosses</span>
+    </div>
+    <p class="lead">One random boss can arrive in Free For All, Two Teams, Four Teams, Maze and Random Events, after a one-minute grace period. An alarm sounds, a banner names it, and when it falls the banner names the tank that did the most damage. Boss Rush sends six waves.</p>
+    <div class="boss-grid" id="boss-grid"></div>
+  </section>
+
+  <section class="page wrap" id="modes" aria-labelledby="modes-title">
+    <div class="page-head">
+      <h2 id="modes-title">Game modes</h2>
+      <span class="count">16 modes · 8 arenas</span>
+    </div>
+    <div class="mode-grid" id="mode-grid"></div>
+    <span class="label section-label">Arena</span>
+    <div class="arena-bar" id="arena-bar"></div>
+    <div class="arena-view panel" id="arena-view"></div>
+
+    <div class="page-head" id="practice" style="margin-top:46px">
+      <h2>Practice <span class="hint-key muted" style="font-size:16px">[F6]</span></h2>
+      <span class="count" id="practice-count">11 challenges</span>
+    </div>
+    <p class="lead">Short offline challenges with a fixed tank and a time limit. F6 opens them from the menu or during a game.</p>
+    <div class="practice-grid" id="practice-grid"></div>
+  </section>
+
+  <section class="page wrap" id="servers" aria-labelledby="servers-title">
+    <div class="page-head">
+      <h2 id="servers-title">Play together</h2>
+      <span class="count">Main server, parties and community servers</span>
+    </div>
+    <div class="host-grid">
+      <div class="ways">
+        <div class="way">
+          <h3>Main server <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span></h3>
+          <p><b>Play</b> or Enter on the title screen joins <b>tankyard.kokonico.me</b>. Busy times split into arenas of twenty players; the server name shows which one you joined. Click the server card to pick a lobby.</p>
+        </div>
+        <div class="way">
+          <h3>Parties</h3>
+          <p>An invite-only match hosted on the leader's computer, with proximity voice and party chat. Internet invites detect your public address and try router forwarding for you.</p>
+        </div>
+        <div class="way">
+          <h3>Community server</h3>
+          <p><b>Host server → Community server</b> starts a server as its own process, so it keeps running while you play anywhere. Your enabled mods run on it; players download nothing. The same server runs without the game on a spare PC, a VPS or a Raspberry Pi.</p>
+        </div>
+        <div class="way">
+          <h3>Your own hostname</h3>
+          <p>A built-in WebSocket listener lets friends join <b>play.example.com</b> over HTTPS behind Caddy or nginx. The <a href="https://github.com/RobertFlexx/tankyard/blob/main/docs/hosting-domain.md">domain guide</a> covers DNS and certificates.</p>
+        </div>
+      </div>
+      <form class="panel server-panel" id="server-form" autocomplete="off">
+        <span class="label accent" style="font-size:15px;line-height:15px">Community server</span>
+        <div class="stack">
+          <label class="label" for="srv-name">Server name</label>
+          <input class="field" id="srv-name" value="My Tank Yard server" maxlength="40">
+        </div>
+        <div class="stack">
+          <label class="label" for="srv-port">UDP port</label>
+          <div class="split">
+            <input class="field" id="srv-port" value="5000" inputmode="numeric" maxlength="5">
+            <span class="note">Forward this UDP port on your router for internet players.</span>
+          </div>
+        </div>
+        <div class="slider"><header><label for="srv-max">Max players</label><span id="srv-max-v">24</span></header><input class="range" type="range" id="srv-max" min="2" max="128" value="24"></div>
+        <div class="slider"><header><label for="srv-lobby">Lobby size</label><span id="srv-lobby-v">20 per lobby</span></header><input class="range" type="range" id="srv-lobby" min="0" max="64" value="20"></div>
+        <div class="slider"><header><label for="srv-bots">Bots per lobby</label><span id="srv-bots-v">8</span></header><input class="range" type="range" id="srv-bots" min="0" max="48" value="8"></div>
+        <div class="stack">
+          <span class="label">Mode</span>
+          <div class="modes" id="srv-modes"></div>
+        </div>
+        <div class="stack">
+          <label class="label" for="srv-pass">Server password  (optional)</label>
+          <input class="field" id="srv-pass" type="text" maxlength="64" placeholder="none">
+        </div>
+        <div class="stack">
+          <span class="label">Command for an always-on machine</span>
+          <div class="command"><code id="srv-cmd"></code><button class="btn small" type="button" data-copy-prev>Copy</button></div>
+          <p class="note">Install only the server with <code>sh install.sh --server</code>. The <a href="https://github.com/RobertFlexx/tankyard/blob/main/docs/hosting.md">hosting guide</a> lists every option and console command.</p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="page wrap" id="mods" aria-labelledby="mods-title">
+    <div class="page-head">
+      <h2 id="mods-title">Mods</h2>
+      <span class="count">Scripted in Luau</span>
+    </div>
+    <div class="mods-grid">
+      <div>
+        <p class="lead">A pack can add game modes, scoring rules, tanks, maps, bosses on a timer, HUD widgets, skins and a restyled menu. It runs on the server in a sandbox, so players who join need nothing installed.</p>
+        <ul>
+          <li><b>Scripts</b> react to kills, deaths, rounds and map events, award score and draw HUD widgets.</li>
+          <li><b>Editor plugins</b> add tools and map checks to the Arena Workshop. Every edit a tool makes is one undo step.</li>
+          <li><b>The Mods page</b> imports a .zip or folder, shows every file inside, and runs a safety review that flags code trying to reach your computer.</li>
+          <li><b>Packs from the old LuaJIT sandbox</b> still run unchanged.</li>
+        </ul>
+        <p class="note" style="margin-top:14px"><a href="https://github.com/RobertFlexx/tankyard/blob/main/docs/modding.md">Modding guide</a> · <a href="https://github.com/RobertFlexx/tankyard/blob/main/docs/editor-plugins.md">Plugin guide</a></p>
+      </div>
+      <div class="code-panel">
+        <div class="code-tabs" role="tablist">
+          <button class="btn small" type="button" role="tab" aria-selected="true" data-code="mod">First blood (server)</button>
+          <button class="btn small" type="button" role="tab" aria-selected="false" data-code="plugin">Row of blocks (editor)</button>
+        </div>
+        <pre class="code" id="code-view"></pre>
+        <p class="code-file" id="code-file"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="page wrap" id="controls" aria-labelledby="controls-title">
+    <div class="page-head">
+      <h2 id="controls-title">Controls</h2>
+      <span class="count">Rebind them in Settings · F1 shows yours</span>
+    </div>
+    <div class="panel controls" id="controls-list"></div>
+  </section>
+
+  <section class="page wrap" id="whats-new" aria-labelledby="news-title">
+    <div class="page-head">
+      <h2 id="news-title">What's new</h2>
+      <span class="count" id="news-count">Tank Yard v0.15.2</span>
+      <div class="actions"><a class="btn small" id="news-link" href="https://github.com/RobertFlexx/tankyard/releases/latest">Release page</a></div>
+    </div>
+    <div class="news-grid">
+      <div class="news-main">
+        <article class="panel notes" id="notes"><p class="muted">Loading the release notes…</p></article>
+        <div class="earlier" id="earlier" hidden><span class="label accent">Earlier releases</span></div>
+      </div>
+      <div class="panel files">
+        <span class="label accent">Downloads</span>
+        <table id="files"><tbody></tbody></table>
+        <p class="note" style="margin:10px 0 0">Click a checksum to copy it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="page wrap credits" id="credits" aria-labelledby="credits-title">
+    <h3 id="credits-title">Credits</h3>
+    <p class="by">Made by RobertFlexx.</p>
+    <p class="inspired">Inspired by Diep.io and Arras.io.</p>
+    <span class="label accent section-label">Built with</span>
+    <p class="built">Rust<i>/</i>Macroquad<i>/</i>Renet + Netcode<i>/</i>CPAL audio</p>
+    <span class="label accent section-label">License</span>
+    <p class="built">MIT or Apache-2.0</p>
+    <p class="fine">DejaVu Sans Bold and Mono fonts. Every tank, boss and arena on this page is drawn from the game's own vector models. Tank Yard is not affiliated with Diep.io or Arras.io.</p>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <a class="btn" href="#top">‹  Back</a>
+    <a class="btn" href="https://github.com/RobertFlexx/tankyard">Source</a>
+    <span class="fine">Tank you for playing. · <a class="fine-link" href="https://github.com/RobertFlexx/tankyard-site">Site source</a></span>
+  </div>
+</footer>
+</body>
+</html>
