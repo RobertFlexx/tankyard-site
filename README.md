@@ -33,29 +33,3 @@ Nothing needs updating by hand when a new version of the game is released.
 GitHub pauses scheduled workflows in a repository that has had no activity for 60 days.
 The page still shows new releases from the API. Re-enable the workflow in the Actions tab
 to keep the saved copy current.
-
-## Game data
-
-`tools/build_data.py` rebuilds `data/` from a Tank Yard checkout with a release build of
-the model exporter:
-
-```sh
-cargo build --locked --release -p tankyard-client --bin tankyard-models   # in the game
-python3 tools/build_data.py ~/src/tankyard                               # here
-```
-
-`python3 tools/build_data.py --release-only` refreshes only `data/release.json`.
-
-## Running it locally
-
-It is a static site with no build step:
-
-```sh
-python3 -m http.server 8000
-```
-
-Then open http://localhost:8000. Python's server doesn't support range requests, so the
-tutorial video can't seek there; GitHub Pages can.
-
-The fonts are DejaVu Sans Bold and DejaVu Sans Mono, under the license in
-`fonts/LICENSE-DejaVu.txt`.
