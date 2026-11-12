@@ -1155,7 +1155,7 @@ h3 {
 @media (max-width: 600px) {
   .page-head .os-tabs {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .os-tabs .btn {
     min-width: 0;
@@ -1335,7 +1335,7 @@ h3 {
 }
 .requirements {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   margin-top: 26px;
 }
@@ -1349,6 +1349,9 @@ h3 {
 }
 .requirements .current {
   border-color: var(--accent);
+}
+.requirements .trademark {
+  font-size: 11px;
 }
 .verify {
   margin-top: 8px;
@@ -1391,6 +1394,18 @@ h3 {
   background-image:
     linear-gradient(#2e3833 1px, transparent 1px),
     linear-gradient(90deg, #2e3833 1px, transparent 1px);
+}
+.s-desk.freebsd {
+  background: radial-gradient(circle at 82% 52%, #2a3646, #1b232e 55%, #151b23);
+}
+/* The official logo, unaltered and clear of the scene's windows. */
+.s-wallpaper {
+  position: absolute;
+  right: 17px;
+  top: calc(50% + 9px);
+  width: 196px;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 .s-taskbar {
   position: absolute;
@@ -1489,6 +1504,17 @@ h3 {
   font-size: 9px;
   color: #f2f5f7;
   background: #12161b;
+}
+.s-topbar.bsd {
+  padding-left: 4px;
+  background: #2b3038;
+  border-bottom: 1px solid #3a414b;
+}
+.s-topbar.bsd .apps {
+  padding: 2px 6px;
+}
+.s-topbar.bsd .apps.press {
+  background: #4d5761;
 }
 .s-win {
   position: absolute;

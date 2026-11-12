@@ -8,7 +8,10 @@ const CMD = {
   linux: `curl -fsSL ${BASE}/install.sh | sh`,
   mac: `curl -fsSL ${BASE}/install-macos.sh | sh`,
   windows: `irm ${BASE}/install.ps1 | iex`,
+  freebsd: `fetch -o - ${BASE}/install.sh | sh`,
 };
+// FreeBSD's windows keep to the left, clear of the logo on its wallpaper.
+const BSD = { x: 18, y: 32, w: 388, h: 300 };
 const CANCEL = Symbol("cancel");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -137,6 +140,12 @@ function desk(S, os) {
       "beforeend",
       `<div class="s-menubar"><b></b><b>Finder</b><span>File</span><span>Edit</span><span>View</span><span class="clock">Tue 12:41</span></div><div class="s-dock"><i></i><i></i><i></i><i class="app"></i><i></i></div>`,
     );
+  } else if (os === "freebsd") {
+    // The official FreeBSD logo, unaltered, from the FreeBSD Foundation.
+    node.insertAdjacentHTML(
+      "beforeend",
+      `<img class="s-wallpaper" src="img/freebsd-logo.png" alt=""><div class="s-topbar bsd"><span class="apps">Applications</span><span>Tue 12:41</span></div>`,
+    );
   } else {
     node.insertAdjacentHTML("beforeend", `<div class="s-topbar"><span>Activities</span><span>Tue 12:41</span><span>▾</span></div>`);
   }
@@ -147,7 +156,7 @@ function win(S, os, { x, y, w, h: height, title = "", dark = false, icon = false
   const controls =
     os === "mac"
       ? `<span class="dots"><i></i><i></i><i></i></span><span class="name" style="flex:1;text-align:center;margin-right:40px">${title}</span>`
-      : `${icon ? '<img src="img/tankyard.svg" alt="">' : ""}<span class="name"${os === "linux" ? ' style="flex:1;text-align:center;margin-left:30px"' : ""}>${title}</span><span class="ctl">${
+      : `${icon ? '<img src="img/tankyard.svg" alt="">' : ""}<span class="name"${os === "linux" || os === "freebsd" ? ' style="flex:1;text-align:center;margin-left:30px"' : ""}>${title}</span><span class="ctl">${
           os === "windows" ? "<span>—</span><i class=\"max\"></i><span>✕</span>" : "<span>✕</span>"
         }</span>`;
   const el = S.add(
@@ -158,7 +167,8 @@ function win(S, os, { x, y, w, h: height, title = "", dark = false, icon = false
 }
 
 function browser(S, os, file) {
-  const b = win(S, os, { x: 34, y: os === "mac" ? 30 : 26, w: 572, h: 318, title: "Tank Yard" });
+  const wide = { x: 34, y: os === "mac" ? 30 : 26, w: 572, h: 318 };
+  const b = win(S, os, { ...(os === "freebsd" ? BSD : wide), title: "Tank Yard" });
   b.body.innerHTML = `<div class="s-addr"><span>‹  ›  ↻</span><div class="s-input">robertflexx.github.io/tankyard-site</div></div>
     <div class="s-site"><div class="t">Tank Yard</div><div class="tank">${tankSvg}</div>
     <div class="pane"><i class="lbl"></i><i class="field"></i><i class="lbl"></i><i class="card"><b>${OS_NAMES[os]}</b></i>
@@ -178,7 +188,7 @@ async function download(S, os, file) {
   const page = browser(S, os, file);
   await S.wait(350);
   await S.click(page.download);
-  const b = bubble(S, file);
+  const b = os === "freebsd" ? bubble(S, file, 146, 70) : bubble(S, file);
   b.status.textContent = `0 of ${formatSize(file.size)}`;
   const counter = setInterval(() => {
     const share = b.bar.getBoundingClientRect().width / Math.max(1, b.bar.parentElement.getBoundingClientRect().width);
@@ -195,6 +205,7 @@ async function download(S, os, file) {
 }
 
 function gameWindow(S, os, x = 120, y = 40, w = 400, height = 300) {
+  if (os === "freebsd") ({ x, y, w, h: height } = BSD);
   const g = win(S, os, { x, y, w, h: height, title: "Tank Yard", icon: true });
   const shapes = [
     [30, 40, "#ffe869", 20, 0],
@@ -214,9 +225,12 @@ function gameWindow(S, os, x = 120, y = 40, w = 400, height = 300) {
 }
 
 function terminal(S, os, { x = 70, y = 44, w = 500, h: height = 290, title } = {}) {
-  const t = win(S, os, { x, y, w, h: height, title: title || (os === "windows" ? "Windows PowerShell" : os === "mac" ? "Terminal — zsh" : "you@desktop: ~"), dark: true });
+  if (os === "freebsd") ({ x, y, w, h: height } = BSD);
+  const names = { windows: "Windows PowerShell", mac: "Terminal — zsh", freebsd: "Terminal - you@freebsd: ~" };
+  const t = win(S, os, { x, y, w, h: height, title: title || names[os] || "you@desktop: ~", dark: true });
   t.body.classList.add("s-term");
-  const prompt = os === "windows" ? "PS C:\\Users\\you>" : os === "mac" ? "you@Mac ~ %" : "you@desktop:~$";
+  const prompts = { windows: "PS C:\\Users\\you>", mac: "you@Mac ~ %", freebsd: "you@freebsd:~ $" };
+  const prompt = prompts[os] || "you@desktop:~$";
   const caret = h("span", { class: "caret" });
   return {
     ...t,
@@ -782,6 +796,7 @@ function methods(os, file, tag) {
       },
     ];
   }
+  if (os === "freebsd") return freebsdMethods(file, tag, version);
   const arm = release.system.arch === "arm";
   const archive = file(arm ? "linux-arm" : "linux-x64");
   const folder = archive.name.replace(/\.tar\.gz$/, "");
@@ -878,6 +893,138 @@ function methods(os, file, tag) {
             const t = terminal(S, "linux", { title: "you@desktop: ~/Downloads" });
             await t.run(`cd ${folder} && ./tankyard`, 24);
             await openGame(S, "linux");
+          },
+        },
+      ],
+    },
+  ];
+}
+
+function freebsdMethods(file, tag, version) {
+  const archive = file("freebsd-x64");
+  const folder = archive.name.replace(/\.tar\.gz$/, "");
+  // Releases from before FreeBSD support have no FreeBSD build.
+  const missing =
+    release.release && !asset("freebsd-x64")
+      ? `<p><b>${tag} has no FreeBSD build yet</b>; the next release brings it. Until then, <a href="https://github.com/RobertFlexx/tankyard/blob/main/docs/freebsd.md#building-from-source">build it from source</a>.</p>`
+      : "";
+  const progress = async (S, t) => {
+    const line = t.print("");
+    const steps = S.instant ? 1 : 20;
+    for (let i = 1; i <= steps; i++) {
+      line.textContent = `${archive.name}  ${Math.round((i / steps) * 100)}% of ${formatSize(archive.size)}`;
+      await S.wait(65);
+    }
+    line.textContent = `${archive.name}  ${formatSize(archive.size)}  9 MBps  04s`;
+  };
+  return [
+    {
+      id: "terminal",
+      name: "Terminal",
+      tag: "recommended",
+      steps: [
+        {
+          title: "Install the sound plugins",
+          text: "<p>Open a terminal and install <code>alsa-plugins</code> as root, once. Tank Yard plays sound and voice chat through it. With <code>sudo</code> or <code>doas</code>, use that instead of <code>su</code>.</p>",
+          cmd: "su root -c 'pkg install alsa-plugins'",
+          scene: async (S) => {
+            desk(S, "freebsd");
+            const t = terminal(S, "freebsd");
+            await t.run("su root -c 'pkg install alsa-plugins'", 22);
+            t.print("Password:");
+            await S.wait(900);
+            t.print("Updating FreeBSD repository catalogue...");
+            await S.wait(500);
+            t.print("New packages to be INSTALLED:");
+            t.print("&nbsp;&nbsp;alsa-lib");
+            t.print("&nbsp;&nbsp;alsa-plugins");
+            t.print("Proceed with this action? [y/N]: y");
+            await S.wait(600);
+            t.print("[1/2] Installing alsa-lib...");
+            await S.wait(400);
+            t.print("[2/2] Installing alsa-plugins...");
+            await S.wait(300);
+            t.idle();
+          },
+        },
+        {
+          title: "Paste the command and press Enter",
+          text: `${missing}<p>FreeBSD's own <code>fetch</code> downloads the installer, so curl isn't needed. It checks the SHA-256 checksum, installs to <code>~/.local/bin</code> and adds Tank Yard to your application menu. No root. Run it again to update.</p>`,
+          cmd: CMD.freebsd,
+          scene: async (S) => {
+            desk(S, "freebsd");
+            const t = terminal(S, "freebsd");
+            await t.run(CMD.freebsd, 14);
+            t.print('<span class="c">Tank Yard</span>');
+            t.print(`Downloading ${tag} for freebsd-x86_64…`);
+            await progress(S, t);
+            t.print("Download verified.");
+            await S.wait(300);
+            t.print(`tankyard ${version}`);
+            t.print("Added Tank Yard to your application menu.");
+            t.print('<span class="g">Installed to /home/you/.local/bin</span>');
+            t.print('Run "/home/you/.local/bin/tankyard", or add "/home/you/.local/bin" to your PATH.');
+            t.idle();
+          },
+        },
+        {
+          title: "Play",
+          text: "<p>Open Tank Yard from your desktop's application menu, under <b>Games</b>, or run <code>~/.local/bin/tankyard</code>. Your settings and progress stay when you update.</p>",
+          scene: async (S) => {
+            desk(S, "freebsd");
+            await S.click(S.root.querySelector(".s-topbar .apps"));
+            const menu = S.add(`<div class="s-menu" style="left:6px;top:18px"><div>Accessories</div><div>Development</div><div class="games">Games ›</div><div>Internet</div><div>Multimedia</div><div>System</div></div>`);
+            await S.wait(350);
+            const games = menu.querySelector(".games");
+            await S.move(games);
+            games.classList.add("hl");
+            const sub = S.add(`<div class="s-menu" style="left:154px;top:${S.at(games)[1] - 13}px"><div class="app">Tank Yard</div></div>`);
+            await S.wait(300);
+            await S.click(sub.querySelector(".app"));
+            menu.remove();
+            sub.remove();
+            await openGame(S, "freebsd");
+          },
+        },
+      ],
+    },
+    {
+      id: "archive",
+      name: "Archive",
+      steps: [
+        {
+          title: "Download the archive",
+          text: `${missing}<p>${archive.name} · ${formatSize(archive.size)}. For FreeBSD 15 or newer on amd64.</p>`,
+          download: "freebsd-x64",
+          scene: async (S) => {
+            desk(S, "freebsd");
+            await download(S, "freebsd", archive);
+          },
+        },
+        {
+          title: "Extract it",
+          text: "<p>In a terminal in your Downloads folder:</p>",
+          cmd: `tar -xzf ${archive.name}`,
+          scene: async (S) => {
+            desk(S, "freebsd");
+            const t = terminal(S, "freebsd", { title: "Terminal - you@freebsd: ~/Downloads" });
+            await t.run("cd ~/Downloads", 40);
+            await t.run(`tar -xzf ${archive.name}`, 24);
+            await t.run("ls", 80);
+            t.print(`<span class="c">${folder}</span>`);
+            t.print(archive.name);
+            t.idle();
+          },
+        },
+        {
+          title: "Run it",
+          text: "<p>It needs <code>alsa-plugins</code> (<code>pkg install alsa-plugins</code> as root) and an X11 desktop. The folder also has the dedicated server, its rc.d script and the tools.</p>",
+          cmd: `cd ${folder} && ./tankyard`,
+          scene: async (S) => {
+            desk(S, "freebsd");
+            const t = terminal(S, "freebsd", { title: "Terminal - you@freebsd: ~/Downloads" });
+            await t.run(`cd ${folder} && ./tankyard`, 24);
+            await openGame(S, "freebsd");
           },
         },
       ],
@@ -1039,8 +1186,8 @@ export function initInstall(models) {
   $("#os-tabs").addEventListener("keydown", (event) => {
     if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
     event.preventDefault();
-    const order = ["windows", "mac", "linux"];
-    const next = order[(order.indexOf(os) + (event.key === "ArrowRight" ? 1 : 2)) % 3];
+    const order = ["windows", "mac", "linux", "freebsd"];
+    const next = order[(order.indexOf(os) + (event.key === "ArrowRight" ? 1 : order.length - 1)) % order.length];
     $(`#os-tabs [data-os="${next}"]`).click();
     $(`#os-tabs [data-os="${next}"]`).focus();
   });

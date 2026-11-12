@@ -12,8 +12,9 @@ export const PACKAGES = [
   { key: "mac-tar", os: "mac", pattern: /macos-universal\.tar\.gz$/, kind: "Archive", arch: "Universal", method: "archive" },
   { key: "linux-x64", os: "linux", pattern: /linux-x86_64\.tar\.gz$/, kind: "Archive", arch: "x86-64", method: "archive" },
   { key: "linux-arm", os: "linux", pattern: /linux-aarch64\.tar\.gz$/, kind: "Archive", arch: "ARM64", method: "archive" },
+  { key: "freebsd-x64", os: "freebsd", pattern: /freebsd-x86_64\.tar\.gz$/, kind: "Archive", arch: "amd64", method: "archive" },
 ];
-export const OS_NAMES = { windows: "Windows", mac: "macOS", linux: "Linux" };
+export const OS_NAMES = { windows: "Windows", mac: "macOS", linux: "Linux", freebsd: "FreeBSD" };
 
 const listeners = new Set();
 export const state = {
@@ -39,6 +40,7 @@ export function defaultPackage(system = state.system) {
   if (system.os === "windows") return "windows-setup";
   if (system.os === "mac") return "mac-pkg";
   if (system.os === "linux") return system.arch === "arm" ? "linux-arm" : "linux-x64";
+  if (system.os === "freebsd" && system.arch !== "arm") return "freebsd-x64";
   return null;
 }
 
@@ -52,8 +54,10 @@ export async function detectSystem() {
   let version = "";
   let mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) || data?.mobile === true;
   const platform = data?.platform || "";
-  // ChromeOS keeps "CrOS" in even a reduced user agent, so it goes first.
-  if (/Chrome OS|ChromeOS/i.test(platform) || /CrOS/.test(ua)) os = "chromeos";
+  // A user agent naming FreeBSD is never anything else, whatever the hints say.
+  // ChromeOS keeps "CrOS" in even a reduced user agent, so it comes next.
+  if (/FreeBSD/i.test(platform) || /FreeBSD/.test(ua)) os = "freebsd";
+  else if (/Chrome OS|ChromeOS/i.test(platform) || /CrOS/.test(ua)) os = "chromeos";
   else if (/Windows/i.test(platform) || /Windows NT/.test(ua)) os = "windows";
   else if (/Android/i.test(platform) || /Android/.test(ua)) os = "android";
   else if (/iPhone|iPad|iPod/.test(ua)) os = "ios";
@@ -90,7 +94,9 @@ export async function detectSystem() {
           ? /CrOS/.test(ua)
             ? "ChromeOS (Linux)"
             : "Linux"
-          : "Your computer";
+          : os === "freebsd"
+            ? "FreeBSD"
+            : "Your computer";
   return { os: mobile ? null : os, arch, label, mobile };
 }
 
@@ -270,7 +276,7 @@ function renderCard() {
   const { system, picked } = state;
   const button = $("#download");
   $("#platform-name").textContent = system.label;
-  if (picked) {
+  if (picked && asset(picked)) {
     const { pkg, file, text } = packageLabel(picked);
     if (pkg.os !== system.os) $("#platform-name").textContent = OS_NAMES[pkg.os];
     $("#platform-meta").innerHTML = "";

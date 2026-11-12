@@ -126,6 +126,7 @@ try {
         <button class="btn" type="button" role="tab" data-os="windows">Windows</button>
         <button class="btn" type="button" role="tab" data-os="mac">macOS</button>
         <button class="btn" type="button" role="tab" data-os="linux">Linux</button>
+        <button class="btn" type="button" role="tab" data-os="freebsd">FreeBSD</button>
       </div>
     </div>
     <div class="methods" id="methods" aria-label="Install method"></div>
@@ -145,7 +146,7 @@ try {
       </div>
     </div>
     <noscript>
-      <p class="lead">Windows: run the setup from the <a href="https://github.com/RobertFlexx/tankyard/releases/latest">latest release</a>. macOS: run <code>curl -fsSL https://github.com/RobertFlexx/tankyard/releases/latest/download/install-macos.sh | sh</code>. Linux: run <code>curl -fsSL https://github.com/RobertFlexx/tankyard/releases/latest/download/install.sh | sh</code>.</p>
+      <p class="lead">Windows: run the setup from the <a href="https://github.com/RobertFlexx/tankyard/releases/latest">latest release</a>. macOS: run <code>curl -fsSL https://github.com/RobertFlexx/tankyard/releases/latest/download/install-macos.sh | sh</code>. Linux: run <code>curl -fsSL https://github.com/RobertFlexx/tankyard/releases/latest/download/install.sh | sh</code>. FreeBSD: run <code>pkg install alsa-plugins</code> as root, then <code>fetch -o - https://github.com/RobertFlexx/tankyard/releases/latest/download/install.sh | sh</code>.</p>
     </noscript>
     <div class="requirements" id="requirements">
       <div class="panel" data-os="windows">
@@ -159,6 +160,11 @@ try {
       <div class="panel" data-os="linux">
         <span class="label accent">Linux</span>
         <p>x86-64 with glibc 2.31 or newer, or ARM64 with glibc 2.35 or newer. Uses your system's X11 and OpenGL libraries.</p>
+      </div>
+      <div class="panel" data-os="freebsd">
+        <span class="label accent">FreeBSD</span>
+        <p>FreeBSD 15 or newer on amd64, with <code>alsa-plugins</code> and an X11 desktop. Works with NVIDIA's driver and Mesa. <a href="https://github.com/RobertFlexx/tankyard/blob/main/docs/freebsd.md">FreeBSD guide</a></p>
+        <p class="trademark"><a href="https://www.freebsd.org/">FreeBSD</a>® and the FreeBSD® logo are registered trademarks of The FreeBSD Foundation. Tank Yard is not affiliated with or endorsed by the Foundation.</p>
       </div>
     </div>
     <div class="verify panel">
