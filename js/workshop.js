@@ -2,55 +2,11 @@
 // the real tutorial playing in the inspector and driving the editor's chrome.
 import { $, $$, h, clamp, clock, reducedMotion, store, onVisible, css, typing } from "./util.js";
 import { drawModel, EXPORT_AIM } from "./models.js";
+import { TOURS } from "./workshop-tours.js";
+import { LOGIC, GATES, DEMO_GATES, gateOpen, logicState, stepLogic, vaultDemo } from "./workshop-logic.js";
 
 /* ---------- The tour ---------- */
 
-const CHAPTERS = [
-  { t: 0, title: "Intro", tab: null },
-  { t: 6.85, title: "Set up", tab: "Map" },
-  { t: 22.42, title: "Build", tab: "Object", mode: "build", cat: "Blocks" },
-  { t: 47.48, title: "Edit", tab: "Object", mode: "edit" },
-  { t: 63.33, title: "Pads", tab: "Object", mode: "build", cat: "Pads" },
-  { t: 78.43, title: "Logic", tab: "Logic", mode: "build", cat: "Logic" },
-  { t: 110.02, title: "Tools", tab: "Tools" },
-  { t: 127.55, title: "Test", tab: "Check" },
-  { t: 143.43, title: "Share", tab: "Files" },
-];
-const CAPTIONS = [
-  [0, "Map editor on the main menu opens the Arena Workshop."],
-  [3.05, "Canvas in the middle, tools below, settings on the right."],
-  [6.85, "Name the arena in Map. Its id follows the name."],
-  [10.26, "Then give it a size."],
-  [14.61, "F fits the whole arena in view."],
-  [16.61, "Drag a panel's edge to resize it. Double-click the edge to put it back."],
-  [22.42, "In Build, pick a block and click to place it."],
-  [28.48, "Drag to draw a wall of any size."],
-  [34.12, "Swipe paints a cell everywhere the pointer passes."],
-  [41.6, "Right-click an object to build more just like it."],
-  [47.48, "Press 2 for Edit. Drag across the floor to select."],
-  [50.85, "Drag to move it. Q and E turn it."],
-  [55.36, "Alt-drag leaves a copy behind. Handles resize."],
-  [63.33, "Conveyors carry tanks the way their arrows point."],
-  [70.55, "A portal sends tanks to its exit. Drag the marker to move it."],
-  [78.43, "Free picks an unused group. New objects join it."],
-  [84.07, "Draw the door in that group."],
-  [87.01, "A plate fires when a tank steps on it."],
-  [93.43, "Set it to Hide group, and it opens the door for 5 seconds."],
-  [97.85, "L draws a line from each trigger to what it changes."],
-  [100.67, "P runs the logic in place. Hold T for a test tank."],
-  [105.29, "The door opens, then closes again on its own."],
-  [110.02, "Plugin packs add tools. Click where one should go, then open Tools."],
-  [119.25, "Countdown wires a timer, a counter and a label as one undo step."],
-  [122.38, "Run the logic and the label counts down."],
-  [127.55, "Check lists anything that would stop a playtest or export."],
-  [132.47, "Shift+F5 playtests from the pointer."],
-  [136.35, "Step on the plate and the door opens."],
-  [139.38, "The portal sends the tank to its exit, onto the conveyor."],
-  [141.73, "Escape brings you back to the editor."],
-  [143.43, "Ctrl+S saves an editable project."],
-  [145.58, "Export makes a pack for the Mods page or a server."],
-  [152.41, "F1 lists every shortcut."],
-];
 const TABS = ["Map", "Object", "Logic", "Check", "Rules", "Files", "Tools"];
 
 /* ---------- The palette ---------- */
@@ -86,7 +42,6 @@ const DECOR = [
   { id: "dust", name: "Dust", w: 80, h: 80 },
   { id: "sparks", name: "Sparks", w: 80, h: 80 },
 ];
-const LOGIC = ["Plate", "Timer", "Exit pad", "Start", "Sender", "Receiver", "Counter", "Goal", "Shapes", "Boss", "Coin flip", "Capture", "Bonus", "Medic", "Trap", "Dice", "Reset", "Gate", "Lever", "Script"];
 const MARKERS = [
   { id: "spawn", name: "Spawn", w: 120, h: 80, color: "#00b2e1" },
   { id: "team1", name: "Team 1 spawn", w: 120, h: 80, color: "#00b2e1" },
@@ -101,6 +56,7 @@ const HINTS = {
   build: "Click to build, or drag to draw a wall of any size.",
   edit: "Drag across the floor to select. Drag to move it; Q and E turn it.",
   delete: "Click or drag over objects to delete them.",
+  pan: "Drag to move the view. Ctrl/Cmd-scroll zooms around the pointer.",
   play: "WASD to drive · click to fire · Esc returns to the editor",
 };
 
@@ -132,6 +88,9 @@ export function initWorkshop(models) {
   const player = $("#ws-player");
   const tank = models.classes.find((c) => c.id === "vector");
   const colors = models.colors;
+  let tour = TOURS.workshop;
+  let CHAPTERS = tour.chapters;
+  let CAPTIONS = tour.captions;
 
   /* ----- Editor state ----- */
   const draft = store.get("workshop");
@@ -257,13 +216,13 @@ export function initWorkshop(models) {
     if (brush.kind === "block") return BLOCKS.find((b) => b.id === brush.style).name;
     if (brush.kind === "pad") return PADS.find((p) => p.id === brush.type).name;
     if (brush.kind === "decor") return DECOR.find((d) => d.id === brush.type).name;
-    if (brush.kind === "logic") return "Plate";
+    if (brush.kind === "logic") return brush.type === "plate" ? "Plate" : brush.type === "lever" ? `Lever · counter ${brush.counter || Math.min(group || 1, 8)}` : brush.type.toUpperCase();
     return MARKERS.find((m) => m.id === brush.type).name;
   }
   function brushSize() {
     if (brush.kind === "block") return [gridSize, gridSize];
     if (brush.kind === "pad") return [160, 160];
-    if (brush.kind === "logic") return [120, 120];
+    if (brush.kind === "logic") return DEMO_GATES.has(brush.type) ? [80, 80] : [120, 120];
     if (brush.kind === "decor") {
       const d = DECOR.find((x) => x.id === brush.type);
       return [d.w, d.h];
@@ -280,14 +239,14 @@ export function initWorkshop(models) {
       if (brush.type === "portal") pad.exit = { x: clamp(x + w + 160, 40, ARENA_W - 40), y: clamp(y + hgt / 2, 40, ARENA_H - 40) };
       return pad;
     }
-    if (brush.kind === "logic") return { ...base, kind: "logic", type: "plate", group: group || 1 };
+    if (brush.kind === "logic") return { ...base, kind: "logic", type: brush.type, group: brush.type === "lever" ? 0 : group || 1, ...(brush.type === "lever" ? { counter: brush.counter || Math.min(group || 1, 8) } : {}) };
     if (brush.kind === "decor") return { ...base, kind: "decor", type: brush.type, group };
     return { ...base, kind: "marker", type: brush.type };
   }
   function brushFrom(o) {
     if (o.kind === "block") return { kind: "block", style: o.style };
     if (o.kind === "pad") return { kind: "pad", type: o.type, angle: o.angle };
-    if (o.kind === "logic") return { kind: "logic", type: "plate" };
+    if (o.kind === "logic") return { kind: "logic", type: o.type, counter: o.counter };
     return { kind: o.kind, type: o.type };
   }
 
@@ -546,6 +505,21 @@ export function initWorkshop(models) {
 
   function drawPlate(g, o, x, y, w, hgt, pressed) {
     g.save();
+    if (o.type === "lever" || DEMO_GATES.has(o.type)) {
+      const on = play && (o.type === "lever" ? play.counters[(o.counter || 1) - 1] > 0 : gateOpen(o.type, play.counters));
+      g.fillStyle = on ? "rgba(0,178,225,.35)" : "rgba(224,122,176,.20)";
+      g.strokeStyle = on ? "#00b2e1" : "#c56898";
+      g.lineWidth = 2;
+      g.fillRect(x, y, w, hgt);
+      g.strokeRect(x + 1, y + 1, w - 2, hgt - 2);
+      g.fillStyle = css("--text") || "#2e3640";
+      g.textAlign = "center";
+      g.textBaseline = "middle";
+      g.font = `bold ${Math.max(9, Math.min(16, w * 0.28))}px Ubuntu, sans-serif`;
+      g.fillText(o.type === "lever" ? `C${o.counter || 1} ${on ? "ON" : "OFF"}` : o.type.toUpperCase(), x + w / 2, y + hgt / 2);
+      g.restore();
+      return;
+    }
     g.fillStyle = pressed ? "rgba(224,122,176,.5)" : "rgba(224,122,176,.28)";
     g.fillRect(x, y, w, hgt);
     g.strokeStyle = "rgba(224,122,176,.95)";
@@ -607,7 +581,7 @@ export function initWorkshop(models) {
   }
 
   function isHidden(o, now) {
-    return play && o.kind === "block" && o.group && play.hidden[o.group] > now;
+    return play && o.group && (play.hidden[o.group] > now || play.gateHidden.has(o.group));
   }
 
   function draw(time) {
@@ -695,7 +669,9 @@ export function initWorkshop(models) {
       if (opts.links && o.kind === "logic") {
         const [px, py] = toScreen(o.x + o.w / 2, o.y + o.h / 2);
         for (const b of objects) {
-          if (b.kind !== "block" || b.group !== o.group) continue;
+          const toGate = o.type === "lever" && b.kind === "logic" && DEMO_GATES.has(b.type);
+          const toBlock = o.type !== "lever" && b.kind === "block" && b.group === o.group;
+          if (!toGate && !toBlock) continue;
           const [bx, by] = toScreen(b.x + b.w / 2, b.y + b.h / 2);
           ctx.save();
           ctx.strokeStyle = "rgba(0,178,225,.85)";
@@ -841,7 +817,7 @@ export function initWorkshop(models) {
     let x = spawn ? spawn.x + spawn.w / 2 : ARENA_W / 2;
     let y = spawn ? spawn.y + spawn.h / 2 : ARENA_H / 2;
     if (at) [x, y] = [clamp(at[0], 30, ARENA_W - 30), clamp(at[1], 30, ARENA_H - 30)];
-    play = { x, y, vx: 0, vy: 0, aim: 0, bullets: [], rings: [], cooldown: 0, firing: false, hidden: {}, onPlate: null, portalLock: 0, zone: null };
+    play = { x, y, vx: 0, vy: 0, aim: 0, bullets: [], rings: [], cooldown: 0, firing: false, hidden: {}, onPlate: null, portalLock: 0, zone: null, ...logicState() };
     selection.clear();
     holder.focus({ preventScroll: true });
     $("#ws-banner").hidden = false;
@@ -916,7 +892,9 @@ export function initWorkshop(models) {
       p.portalLock = 0.9;
     }
     const plate = zones.find((z) => z.kind === "logic");
-    if (plate && p.onPlate !== plate) p.hidden[plate.group] = now + 5;
+    if (stepLogic(objects, p, now)) {
+      hint(`Counter 1: ${p.counters[0]} · Counter 2: ${p.counters[1]}. AND needs both, OR either, XOR just one.`, 0);
+    }
     p.onPlate = plate || null;
     for (const ring of p.rings) ring.t += dt * 2;
     p.rings = p.rings.filter((r) => r.t < 1);
@@ -967,15 +945,16 @@ export function initWorkshop(models) {
       if (event.button === 0) play.firing = true;
       return;
     }
-    if (event.button === 1 || (event.button === 0 && keys.has(" "))) {
+    if (event.button === 1 || (event.button === 0 && (keys.has(" ") || mode === "pan"))) {
       drag = { type: "pan", from: pointer, ox: view.ox, oy: view.oy };
       return;
     }
     if (event.button === 2) {
+      if (mode === "pan") return;
       const o = hit(wx, wy);
       if (o) {
         brush = brushFrom(o);
-        setCat({ block: "Blocks", pad: "Pads", decor: "Decor", logic: "Logic", marker: "Markers" }[o.kind], false);
+        setCat(o.kind === "logic" && o.type !== "plate" ? "Gates" : { block: "Blocks", pad: "Pads", decor: "Decor", logic: "Logic", marker: "Markers" }[o.kind], false);
         setMode("build");
       } else drag = { type: "pan", from: pointer, ox: view.ox, oy: view.oy };
       return;
@@ -1032,7 +1011,7 @@ export function initWorkshop(models) {
     dirty = true;
     if (!drag) {
       if (mode === "edit" && !play) canvas.style.cursor = exitAt(...pointer) || handleAt(...pointer) ? "move" : hit(...toWorld(...pointer)) ? "grab" : "default";
-      else canvas.style.cursor = play ? "crosshair" : "default";
+      else canvas.style.cursor = play ? "crosshair" : mode === "pan" ? "grab" : "default";
       return;
     }
     const [wx, wy] = toWorld(...pointer);
@@ -1207,6 +1186,7 @@ export function initWorkshop(models) {
     if (key === "1") setMode("build");
     else if (key === "2") setMode("edit");
     else if (key === "3") setMode("delete");
+    else if (key === "4") setMode("pan");
     else if (key === "f") fit();
     else if (key === "l") setOpt("links", !opts.links);
     else if (key === " ") {
@@ -1274,8 +1254,8 @@ export function initWorkshop(models) {
       b.classList.toggle("on", on);
       b.setAttribute("aria-pressed", String(on));
     });
-    $("#ws-tag").textContent = mode === "build" ? `Build · ${brushName()}` : mode === "edit" ? "Edit" : "Delete";
-    if (mode !== "edit") selection.clear();
+    $("#ws-tag").textContent = mode === "build" ? `Build · ${brushName()}` : mode === "edit" ? "Edit" : mode === "pan" ? "Pan" : "Delete";
+    if (mode !== "edit" && mode !== "pan") selection.clear();
     hint(HINTS[mode]);
     dirty = true;
   }
@@ -1288,7 +1268,10 @@ export function initWorkshop(models) {
   function setCat(next, pick = true) {
     cat = next;
     $$("#ws-cats [data-cat]").forEach((b) => b.classList.toggle("on", b.dataset.cat === cat));
-    if (pick) brush = { ...palette[cat][0].brush };
+    if (pick) {
+      const first = palette[cat].find((item) => item.brush);
+      if (first) brush = { ...first.brush };
+    }
     renderTiles();
     if (mode === "build") $("#ws-tag").textContent = `Build · ${brushName()}`;
   }
@@ -1305,6 +1288,12 @@ export function initWorkshop(models) {
     Pads: PADS.map((p) => ({ name: p.name, brush: { kind: "pad", type: p.id, angle: 0 }, draw: (g) => drawPad(g, { type: p.id, angle: 0 }, 6, 2, 46, 46, 0.4) })),
     Decor: DECOR.map((d) => ({ name: d.name, brush: { kind: "decor", type: d.id }, draw: (g) => drawDecor(g, { type: d.id }, 6, 6, 46, d.h > d.w * 0.6 ? 40 : 22, 0.3) })),
     Logic: LOGIC.map((name, i) => ({ name, brush: i === 0 ? { kind: "logic", type: "plate" } : null, draw: (g) => (i === 0 ? drawPlate(g, {}, 6, 2, 46, 46) : logicIcon(g, i)) })),
+    Gates: GATES.map((name, i) => {
+      const type = name.toLowerCase();
+      const working = type === "lever" || DEMO_GATES.has(type);
+      return { name, brush: working ? { kind: "logic", type } : null,
+        draw: (g) => working ? drawPlate(g, { type, counter: 1 }, 6, 2, 46, 46, false) : logicIcon(g, i) };
+    }),
     Markers: MARKERS.map((m) => ({ name: m.name, brush: { kind: "marker", type: m.id }, draw: (g) => drawMarker(g, { type: m.id }, 4, 8, 50, m.id === "objective" ? 30 : 34) })),
   };
   function logicIcon(g, i) {
@@ -1331,8 +1320,9 @@ export function initWorkshop(models) {
       const button = h("button", { class: "ws-tile", type: "button", "aria-pressed": String(same(item.brush, brush)), title: item.name }, tileCanvas(item.draw), h("span", { text: item.name }));
       button.addEventListener("click", () => {
         if (!item.brush) {
-          seekChapter(5);
-          hint(`${item.name} and the other logic pieces work in the game. The tour shows a plate opening a door.`, 5000);
+          setTour("logic");
+          seekChapter(1);
+          hint(`${item.name} is available in the game. This preview supports Plates, Levers and AND/OR/XOR gates. See the logic tutorial for full wiring.`, 6000);
           return;
         }
         brush = { ...item.brush };
@@ -1371,8 +1361,12 @@ export function initWorkshop(models) {
   });
   $("#ws-gfree").addEventListener("click", () => {
     const used = new Set(objects.map((o) => o.group).filter(Boolean));
-    group = 1;
-    while (used.has(group)) group++;
+    const free = Array.from({ length: 32 }, (_, i) => i + 1).find((n) => !used.has(n));
+    if (!free) {
+      hint("All 32 groups are in use. Remove a group before choosing another.", 5000);
+      return;
+    }
+    group = free;
     showGroup();
     hint(`Group ${group} is free. New objects join it.`);
   });
@@ -1390,7 +1384,18 @@ export function initWorkshop(models) {
     hint(saved ? "Saved in this browser. In the game, Ctrl+S saves an editable project." : "Browser storage is unavailable. Keep this page open to keep working.");
   }
   $("#ws-save").addEventListener("click", save);
+  $("#ws-demo").addEventListener("click", () => {
+    stopPlay();
+    commit();
+    objects = vaultDemo();
+    selection.clear();
+    setOpt("links", true);
+    fit();
+    dirty = true;
+    hint("Try both levers in Playtest. The AND opens the vault while both are on. Undo restores your previous map.", 8000);
+  });
   $("#ws-export").addEventListener("click", () => {
+    setTour("workshop");
     seek(145.58);
     hint("Export makes a pack for the Mods page or a server. The tour shows it now.", 5000);
   });
@@ -1422,42 +1427,55 @@ export function initWorkshop(models) {
     }
   }
 
-  /* ----- Video tour ----- */
+  /* ----- Video tours ----- */
   const tabs = $("#ws-tabs");
-  for (const name of TABS) {
-    const index = CHAPTERS.findIndex((c) => c.tab === name);
-    tabs.append(
-      h("button", {
-        class: "btn small",
-        type: "button",
-        text: name,
-        disabled: index < 0,
-        title: index < 0 ? `${name} isn't covered in the tour` : `Jump to ${CHAPTERS[index].title}`,
-        dataset: { tab: name },
-        onclick: () => seekChapter(index),
-      }),
-    );
-  }
   const list = $("#ws-chapters");
-  CHAPTERS.forEach((c, i) => {
-    list.append(
-      h(
-        "li",
-        {},
-        h(
-          "button",
-          { type: "button", dataset: { chapter: i }, onclick: () => seekChapter(i) },
-          h("span", { class: "n", text: String(i) }),
-          h("span", { text: c.title }),
-          h("span", { class: "t", text: clock(c.t) }),
-          h("span", { class: "p" }),
-        ),
-      ),
-    );
-  });
   const ticks = $("#ws-ticks");
-  const duration = () => (Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 157.23);
-  CHAPTERS.slice(1).forEach((c) => ticks.append(h("i", { style: { left: `${(c.t / 157.23) * 100}%` } })));
+  const duration = () => (Number.isFinite(video.duration) && video.duration > 0 ? video.duration : tour.duration);
+  function renderTour() {
+    tabs.replaceChildren();
+    list.replaceChildren();
+    ticks.replaceChildren();
+    for (const name of TABS) {
+      const index = CHAPTERS.findIndex((c) => c.tab === name);
+      tabs.append(h("button", { class: "btn small", type: "button", text: name,
+        disabled: index < 0, title: index < 0 ? `${name} isn't covered in this tour` : `Jump to ${CHAPTERS[index].title}`,
+        dataset: { tab: name }, onclick: () => seekChapter(index) }));
+    }
+    CHAPTERS.forEach((c, i) => list.append(h("li", {}, h("button", {
+      type: "button", dataset: { chapter: i }, onclick: () => seekChapter(i),
+    }, h("span", { class: "n", text: String(i) }), h("span", { text: c.title }),
+    h("span", { class: "t", text: clock(c.t) }), h("span", { class: "p" })))));
+    CHAPTERS.slice(1).forEach((c) => ticks.append(h("i", { style: { left: `${(c.t / tour.duration) * 100}%` } })));
+  }
+  function setTour(id) {
+    const next = TOURS[id];
+    if (!next || next === tour) return;
+    video.pause();
+    tour = next;
+    CHAPTERS = tour.chapters;
+    CAPTIONS = tour.captions;
+    pendingSeek = null;
+    chapterShown = captionShown = -1;
+    userPaused = true;
+    video.poster = tour.poster;
+    video.setAttribute("aria-label", tour.label);
+    video.replaceChildren(
+      h("source", { src: `media/${tour.file}.webm`, type: 'video/webm; codecs="vp9"' }),
+      h("source", { src: `media/${tour.file}.mp4`, type: "video/mp4" }),
+      ...(id === "logic" ? [h("track", { kind: "captions", src: "media/logic-gates-tutorial.vtt", srclang: "en", label: "English" })] : []),
+    );
+    $("#ws-written").href = `https://github.com/RobertFlexx/tankyard/blob/main/docs/${id === "logic" ? "logic-gates-tutorial" : "map-editor"}.md`;
+    video.preload = "metadata";
+    video.load();
+    renderTour();
+    $$("[data-tour]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.tour === id)));
+    $("#ws-tour-note").textContent = id === "logic" ? "Preview of the next release. In the demo, levers connect directly to gates. The game supports full signal wiring." : "The original workshop tour. Choose Logic gates for the new vault circuit.";
+    syncVideo();
+    syncButtons();
+  }
+  $$("[data-tour]").forEach((button) => button.addEventListener("click", () => setTour(button.dataset.tour)));
+  renderTour();
 
   let userPaused = false;
   let chapterShown = -1;
@@ -1479,7 +1497,7 @@ export function initWorkshop(models) {
     userPaused = !resume;
   }
   function seekChapter(i) {
-    if (i < 0) return;
+    if (i < 0 || i >= CHAPTERS.length) return;
     seek(CHAPTERS[i].t + 0.05);
   }
   function syncVideo() {
@@ -1518,7 +1536,7 @@ export function initWorkshop(models) {
     if (caption !== captionShown) {
       captionShown = caption;
       $("#ws-caption").innerHTML = "";
-      $("#ws-caption").append(h("small", { text: chapter ? `${chapter} · ${CHAPTERS[chapter].title}` : "Arena Workshop tour" }), h("span", { text: CAPTIONS[caption][1] }));
+      $("#ws-caption").append(h("small", { text: chapter ? `${chapter} · ${CHAPTERS[chapter].title}` : tour.label }), h("span", { text: CAPTIONS[caption][1] }));
     }
   }
   function syncButtons() {

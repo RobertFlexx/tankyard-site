@@ -182,6 +182,7 @@ cargo build --locked --release --workspace
         <button class="btn" type="button" id="ws-redo" disabled>Redo</button>
         <span class="gap"></span>
         <button class="btn" type="button" id="ws-new">New</button>
+        <button class="btn" type="button" id="ws-demo" title="Load a two-lever vault. Undo restores your previous map.">Logic demo</button>
         <button class="btn" type="button" id="ws-save">Save</button>
         <button class="btn" type="button" id="ws-export">Export</button>
         <span class="grow"></span>
@@ -190,14 +191,20 @@ cargo build --locked --release --workspace
         <button class="btn primary" type="button" id="ws-play">Playtest <span class="key">F5</span></button>
         <a class="btn" href="#top">Back</a>
       </div>
-      <div class="ws-canvas" id="ws-canvas" tabindex="0" aria-label="Arena editor canvas. Press 1 to build, 2 to edit, 3 to delete, F5 to playtest.">
+      <div class="ws-canvas" id="ws-canvas" tabindex="0" aria-label="Arena editor canvas. Press 1 to build, 2 to edit, 3 to delete, 4 to pan, F5 to playtest.">
         <canvas id="ws-gl"></canvas>
         <span class="ws-tag" id="ws-tag">Build · Slate</span>
         <span class="ws-coords" id="ws-coords">0, 0  ·  100%</span>
         <span class="ws-hint" id="ws-hint">Click to build, or press F1 for every shortcut.</span>
         <span class="ws-play-banner" id="ws-banner" hidden>Playtest  ·  WASD to drive, click to fire, Esc to stop</span>
       </div>
-      <aside class="ws-side" aria-label="Arena Workshop tour">
+      <aside class="ws-side" aria-label="Arena Workshop tutorials">
+        <div class="ws-tour-picker" role="group" aria-label="Choose a tutorial">
+          <button class="btn small" type="button" data-tour="workshop" aria-pressed="true">Getting started</button>
+          <button class="btn small" type="button" data-tour="logic" aria-pressed="false">Logic gates</button>
+          <a id="ws-written" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md">Written guide</a>
+        </div>
+        <p class="ws-tour-note" id="ws-tour-note">The original workshop tour. Choose Logic gates for the new vault circuit.</p>
         <div class="ws-tabs" id="ws-tabs"></div>
         <div class="ws-player" id="ws-player">
           <video id="ws-video" playsinline muted preload="none" poster="media/tutorial-poster.jpg" aria-label="Arena Workshop tutorial, 2 minutes 37 seconds">
@@ -221,6 +228,7 @@ cargo build --locked --release --workspace
           <button class="btn on" type="button" data-mode="build" aria-pressed="true">Build<sup>1</sup></button>
           <button class="btn" type="button" data-mode="edit" aria-pressed="false">Edit<sup>2</sup></button>
           <button class="btn" type="button" data-mode="delete" aria-pressed="false">Delete<sup>3</sup></button>
+          <button class="btn" type="button" data-mode="pan" aria-pressed="false">Pan<sup>4</sup></button>
         </div>
         <div class="ws-palette">
           <div class="ws-cats" id="ws-cats">
@@ -228,6 +236,7 @@ cargo build --locked --release --workspace
             <button class="btn small" type="button" data-cat="Pads">Pads</button>
             <button class="btn small" type="button" data-cat="Decor">Decor</button>
             <button class="btn small" type="button" data-cat="Logic">Logic</button>
+            <button class="btn small" type="button" data-cat="Gates">Gates</button>
             <button class="btn small" type="button" data-cat="Markers">Markers</button>
             <span class="ws-group">Group <button class="btn small" type="button" id="ws-gminus">−</button><b id="ws-gval">none</b><button class="btn small" type="button" id="ws-gplus">+</button><button class="btn small" type="button" id="ws-gfree">Free</button></span>
           </div>

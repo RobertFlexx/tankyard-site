@@ -3606,3 +3606,10 @@ h3 {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Keep the two workshop tours easy to switch on a narrow inspector. */
+.ws-tour-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; padding: 10px 8px 2px; }
+.ws-tour-picker .btn { flex: 1 1 100px; font-size: 12px; padding: 4px 8px; }
+.ws-tour-picker .btn[aria-pressed="true"] { background: var(--accent, #00b2e1); color: #fff; }
+.ws-tour-picker a { font-size: 11px; padding: 4px; }
+.ws-tour-note { margin: 4px 12px; color: var(--muted); font-size: 11px; line-height: 1.4; }
