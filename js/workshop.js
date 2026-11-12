@@ -134,7 +134,11 @@ export function initWorkshop(models) {
   const colors = models.colors;
 
   /* ----- Editor state ----- */
-  let objects = store.get("workshop") || starter();
+  const draft = store.get("workshop");
+  const validDraft = Array.isArray(draft) && draft.every((o) => o && ["block", "pad", "decor", "logic", "marker"].includes(o.kind)
+    && [o.x, o.y, o.w, o.h].every(Number.isFinite) && o.w > 0 && o.h > 0
+    && (o.type !== "portal" || (o.exit && [o.exit.x, o.exit.y].every(Number.isFinite))));
+  let objects = validDraft ? draft : starter();
   let undo = [];
   let redo = [];
   let mode = "build";
@@ -144,13 +148,15 @@ export function initWorkshop(models) {
   let group = 0;
   let gridSize = 40;
   const opts = { swipe: false, snap: true, hidden: true, groups: true, links: false };
-  let saved = !!store.get("workshop");
+  let saved = validDraft;
   let view = { zoom: 1, ox: 0, oy: 0 };
   let width = 0;
   let height = 0;
   let ratio = 1;
   let pointer = null;
   let drag = null;
+  let dragPointer = null;
+  let gesture = null;
   let play = null;
   let helpOpen = false;
   let visible = false;
@@ -945,6 +951,8 @@ export function initWorkshop(models) {
   }
   canvas.addEventListener("contextmenu", (event) => event.preventDefault());
   canvas.addEventListener("pointerdown", (event) => {
+    if (dragPointer !== null || event.button > 2 || !event.isPrimary) return;
+    dragPointer = event.pointerId;
     holder.focus({ preventScroll: true });
     setPointer(event);
     canvas.setPointerCapture(event.pointerId);
@@ -972,6 +980,7 @@ export function initWorkshop(models) {
       } else drag = { type: "pan", from: pointer, ox: view.ox, oy: view.oy };
       return;
     }
+    gesture = { objects: JSON.stringify(objects), undo: [...undo], redo: [...redo], saved };
     if (mode === "build") {
       if (wx < 0 || wy < 0 || wx > ARENA_W || wy > ARENA_H) return;
       commit();
@@ -1018,6 +1027,7 @@ export function initWorkshop(models) {
     dirty = true;
   });
   canvas.addEventListener("pointermove", (event) => {
+    if (dragPointer !== null && event.pointerId !== dragPointer) return;
     setPointer(event);
     dirty = true;
     if (!drag) {
@@ -1060,14 +1070,29 @@ export function initWorkshop(models) {
       selection = new Set(objects.filter((o) => o.x < drag.rect.x + drag.rect.w && o.x + o.w > drag.rect.x && o.y < drag.rect.y + drag.rect.h && o.y + o.h > drag.rect.y));
     }
   });
-  const endDrag = () => {
+  const endDrag = (event) => {
+    if (event.pointerId !== dragPointer) return;
+    dragPointer = null;
+    const cancelled = event.type !== "pointerup";
     if (play) play.firing = false;
-    if (!drag) return;
-    if (drag.type === "build" && drag.rect) {
+    if (!drag) {
+      gesture = null;
+      return;
+    }
+    if (!cancelled && drag.type === "build" && drag.rect) {
       const r = drag.rect;
       if (r.w > 0 && r.h > 0) objects.push(make(r.x, r.y, r.w, r.h));
     }
-    if (drag.type === "move" && drag.base.every(([o, x, y]) => o.x === x && o.y === y)) undo.pop();
+    if (gesture && (cancelled || JSON.stringify(objects) === gesture.objects)) {
+      if (cancelled) {
+        objects = JSON.parse(gesture.objects);
+        selection.clear();
+      }
+      undo = gesture.undo;
+      redo = gesture.redo;
+      saved = gesture.saved;
+    }
+    gesture = null;
     drag = null;
     dirty = true;
     refreshTop();
@@ -1082,6 +1107,7 @@ export function initWorkshop(models) {
     }
   });
   canvas.addEventListener("pointercancel", endDrag);
+  canvas.addEventListener("lostpointercapture", endDrag);
   canvas.addEventListener("pointerleave", () => {
     if (!drag) pointer = null;
     dirty = true;
@@ -1216,6 +1242,11 @@ export function initWorkshop(models) {
   holder.addEventListener("blur", () => {
     keys.clear();
     if (play) play.firing = false;
+  });
+  addEventListener("blur", () => {
+    keys.clear();
+    if (play) play.firing = false;
+    if (dragPointer !== null) endDrag({ pointerId: dragPointer, type: "pointercancel" });
   });
 
   for (const part of [holder, $(".ws-dock", root), $(".ws-top", root)]) {
@@ -1354,10 +1385,9 @@ export function initWorkshop(models) {
     dirty = true;
   });
   function save() {
-    store.set("workshop", objects);
-    saved = true;
+    saved = store.set("workshop", objects);
     refreshTop();
-    hint("Saved in this browser. In the game, Ctrl+S saves an editable project.");
+    hint(saved ? "Saved in this browser. In the game, Ctrl+S saves an editable project." : "Browser storage is unavailable. Keep this page open to keep working.");
   }
   $("#ws-save").addEventListener("click", save);
   $("#ws-export").addEventListener("click", () => {
@@ -1379,14 +1409,14 @@ export function initWorkshop(models) {
     last = now;
     const animated = play || objects.some((o) => o.type === "conveyor" || o.type === "speed" || o.type === "portal" || o.kind === "decor");
     if (play) stepPlay(dt);
-    if (dirty || (animated && !reducedMotion.matches)) {
+    if (dirty || play || (animated && !reducedMotion.matches)) {
       draw(reducedMotion.matches ? 0 : now / 1000);
       dirty = false;
     }
   }
   function run(on) {
     cancelAnimationFrame(frame);
-    if (on) {
+    if (on && holder.clientWidth && !document.hidden) {
       last = 0;
       frame = requestAnimationFrame(loop);
     }
@@ -1432,18 +1462,21 @@ export function initWorkshop(models) {
   let userPaused = false;
   let chapterShown = -1;
   let captionShown = -1;
-  function seek(t) {
+  let pendingSeek = null;
+  function applySeek() {
+    if (!pendingSeek || video.readyState < 1) return;
+    const { time, resume } = pendingSeek;
+    pendingSeek = null;
+    video.currentTime = clamp(time, 0, duration());
+    if (resume && visible && !document.hidden && video.paused) video.play().catch(() => {});
+  }
+  video.addEventListener("loadedmetadata", applySeek);
+  function seek(t, resume = true) {
     if (video.preload === "none") video.preload = "auto";
-    const go = () => {
-      video.currentTime = t;
-      video.play().catch(() => {});
-    };
-    if (video.readyState >= 1) go();
-    else {
-      video.load();
-      video.addEventListener("loadedmetadata", go, { once: true });
-    }
-    userPaused = false;
+    pendingSeek = { time: t, resume };
+    if (video.readyState >= 1) applySeek();
+    else if (video.networkState === 0) video.load();
+    userPaused = !resume;
   }
   function seekChapter(i) {
     if (i < 0) return;
@@ -1455,6 +1488,7 @@ export function initWorkshop(models) {
     $("#ws-progress").style.width = `${(t / d) * 100}%`;
     $("#ws-time").textContent = `${clock(t)} / ${clock(d)}`;
     $("#ws-seek").setAttribute("aria-valuenow", String(Math.round(t)));
+    $("#ws-seek").setAttribute("aria-valuemax", String(Math.round(d)));
     $("#ws-seek").setAttribute("aria-valuetext", `${clock(t)} of ${clock(d)}`);
     let chapter = 0;
     CHAPTERS.forEach((c, i) => {
@@ -1479,7 +1513,7 @@ export function initWorkshop(models) {
         if (c.cat && c.cat !== cat && visible) setCat(c.cat, c.cat !== "Logic");
       }
       const row = list.children[chapter];
-      if (row && list.scrollHeight > list.clientHeight) list.scrollTo({ top: row.offsetTop - list.offsetTop - 30, behavior: "smooth" });
+      if (row && list.scrollHeight > list.clientHeight) list.scrollTo({ top: row.offsetTop - list.offsetTop - 30, behavior: reducedMotion.matches ? "instant" : "smooth" });
     }
     if (caption !== captionShown) {
       captionShown = caption;
@@ -1499,10 +1533,16 @@ export function initWorkshop(models) {
   video.addEventListener("play", syncButtons);
   video.addEventListener("pause", syncButtons);
   video.addEventListener("ended", syncButtons);
+  video.addEventListener("error", () => {
+    pendingSeek = null;
+    $("#ws-caption").textContent = "The tour could not load. Press Play to try again.";
+    syncButtons();
+  });
   const toggleVideo = () => {
     if (video.paused) {
       userPaused = false;
       if (video.preload === "none") video.preload = "auto";
+      if (video.error) video.load();
       video.play().catch(() => {});
     } else {
       userPaused = true;
@@ -1513,26 +1553,40 @@ export function initWorkshop(models) {
   $("#ws-bigplay").addEventListener("click", toggleVideo);
   video.addEventListener("click", toggleVideo);
   const seekBar = $("#ws-seek");
+  let seeking = null;
+  let seekResume = false;
   const seekTo = (event) => {
     const rect = seekBar.getBoundingClientRect();
-    seek(clamp((event.clientX - rect.left) / rect.width, 0, 1) * duration());
+    if (rect.width) seek(clamp((event.clientX - rect.left) / rect.width, 0, 1) * duration(), seekResume);
   };
   seekBar.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || seeking !== null) return;
+    event.preventDefault();
+    seekBar.focus({ preventScroll: true });
+    seeking = event.pointerId;
+    seekResume = !video.paused;
     seekBar.setPointerCapture(event.pointerId);
     seekTo(event);
-    const move = (e) => seekTo(e);
-    seekBar.addEventListener("pointermove", move);
-    seekBar.addEventListener("pointerup", () => seekBar.removeEventListener("pointermove", move), { once: true });
   });
+  seekBar.addEventListener("pointermove", (event) => {
+    if (event.pointerId === seeking) seekTo(event);
+  });
+  const endSeek = (event) => {
+    if (event.pointerId === seeking) seeking = null;
+  };
+  for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) seekBar.addEventListener(type, endSeek);
   seekBar.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-      event.preventDefault();
-      seek(clamp((video.currentTime || 0) + (event.key === "ArrowRight" ? 5 : -5), 0, duration()));
-    }
+    if (!["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const t = event.key === "Home" ? 0 : event.key === "End" ? duration() : (video.currentTime || 0) + (event.key === "ArrowRight" ? 5 : -5);
+    seek(clamp(t, 0, duration()), !video.paused);
   });
   $("#ws-full").addEventListener("click", () => {
     if (video.preload === "none") video.preload = "auto";
-    (video.requestFullscreen || video.webkitEnterFullscreen)?.call(video);
+    try {
+      const fullscreen = (video.requestFullscreen || video.webkitEnterFullscreen)?.call(video);
+      fullscreen?.catch(() => {});
+    } catch { /* The browser may refuse fullscreen; inline playback still works. */ }
     if (video.paused) video.play().catch(() => {});
   });
   // Wide: the tour takes over the canvas so the captions are readable.
@@ -1541,12 +1595,17 @@ export function initWorkshop(models) {
     if (!wide) return;
     const box = root.getBoundingClientRect();
     const area = holder.getBoundingClientRect();
+    if (!area.width || !area.height) {
+      setWide(false);
+      return;
+    }
     const w = Math.min(area.width - 24, (area.height - 24) * (16 / 9));
     player.style.width = `${w}px`;
     player.style.left = `${area.left - box.left + (area.width - w) / 2}px`;
     player.style.top = `${area.top - box.top + (area.height - (w * 9) / 16) / 2}px`;
   }
   function setWide(on) {
+    on = on && holder.clientWidth > 0;
     wide = on;
     root.classList.toggle("theater", on);
     $("#ws-big").setAttribute("aria-pressed", String(on));
@@ -1563,7 +1622,7 @@ export function initWorkshop(models) {
   });
 
   /* ----- Visibility and setup ----- */
-  const autoplay = () => !reducedMotion.matches && innerWidth > 860 && !navigator.connection?.saveData;
+  const autoplay = () => !reducedMotion.matches && innerWidth > 860 && !matchMedia("(any-pointer: coarse)").matches && !navigator.connection?.saveData;
   onVisible(
     root,
     (isVisible) => {
@@ -1573,14 +1632,18 @@ export function initWorkshop(models) {
         video.preload = "auto";
         video.play().catch(() => {});
       }
-      if (!isVisible && !video.paused) video.pause();
-      if (!isVisible) stopPlay();
+      if (!isVisible && !video.paused && (document.hidden || !(document.fullscreenElement === video || video.webkitDisplayingFullscreen))) video.pause();
+      if (!isVisible) {
+        if (dragPointer !== null) endDrag({ pointerId: dragPointer, type: "pointercancel" });
+        stopPlay();
+      }
     },
     0.35,
   );
   new ResizeObserver(() => {
     resize();
     placeWide();
+    run(visible);
   }).observe(holder);
   document.addEventListener("tankyard:theme", () => {
     dirty = true;

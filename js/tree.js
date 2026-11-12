@@ -1,6 +1,6 @@
 // The tank tree page, ported from tank_tree.rs. The layout itself comes
 // precomputed from tank_tree_layout.rs by tools/build_data.py.
-import { $, h, clamp, css, mixHex, onVisible, store } from "./util.js";
+import { $, h, clamp, css, mixHex, onVisible, store, reducedMotion } from "./util.js";
 import { drawModel, placement, svgModel } from "./models.js";
 
 const COLUMN = 124;
@@ -43,6 +43,11 @@ export function initTree(data) {
   let anim = null;
   const pointers = new Map();
 
+  function invalidate() {
+    dirty = true;
+    if (visible && !frame) frame = requestAnimationFrame(loop);
+  }
+
   const vertical = (z) => Math.max(z, height / (layout.height + 100));
   const origin = () => [width / 2 + pan[0], height / 2 + pan[1]];
   const point = (i) => {
@@ -54,20 +59,21 @@ export function initTree(data) {
   function fitAll() {
     zoom = clamp(Math.min(width / (layout.width + 100), height / (layout.height + 80)), 0.055, 1.2);
     pan = [0, -layout.height * vertical(zoom) * 0.5 + 40 * vertical(zoom)];
-    dirty = true;
+    invalidate();
   }
   function focus(i, smooth = true) {
     const targetZoom = clamp(width < 600 ? 0.7 : 1, 0.2, 2);
     const vz = Math.max(targetZoom, height / (layout.height + 100));
     const goal = [-layout.nodes[i][0] * targetZoom, -layout.nodes[i][1] * vz];
-    if (!smooth) {
+    if (!smooth || reducedMotion.matches) {
+      anim = null;
       zoom = targetZoom;
       pan = goal;
-      dirty = true;
+      invalidate();
       return;
     }
-    anim = { from: [zoom, ...pan], to: [targetZoom, ...goal], t: 0 };
-    dirty = true;
+    anim = { from: [zoom, ...pan], to: [targetZoom, ...goal], start: performance.now() };
+    invalidate();
   }
   function clampPan() {
     const range = [layout.width * zoom * 0.5 + width * 0.4, layout.height * vertical(zoom) + height * 0.4];
@@ -85,7 +91,7 @@ export function initTree(data) {
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
     if (first) fitAll();
-    dirty = true;
+    invalidate();
   }
 
   function lineage() {
@@ -197,13 +203,13 @@ export function initTree(data) {
   }
 
   function loop(now) {
-    frame = requestAnimationFrame(loop);
+    frame = 0;
     if (anim) {
-      anim.t = Math.min(1, anim.t + 1 / 22);
-      const e = 1 - Math.pow(1 - anim.t, 3);
+      const t = Math.min(1, (now - anim.start) / 350);
+      const e = 1 - Math.pow(1 - t, 3);
       zoom = anim.from[0] + (anim.to[0] - anim.from[0]) * e;
       pan = [anim.from[1] + (anim.to[1] - anim.from[1]) * e, anim.from[2] + (anim.to[2] - anim.from[2]) * e];
-      if (anim.t >= 1) anim = null;
+      if (t >= 1) anim = null;
       dirty = true;
     }
     if (dirty) {
@@ -211,6 +217,7 @@ export function initTree(data) {
       draw();
       dirty = false;
     }
+    if (anim) invalidate();
   }
 
   function cardAt(x, y) {
@@ -226,7 +233,7 @@ export function initTree(data) {
     store.set("tank", i);
     renderDetail();
     if (scroll) focus(i);
-    dirty = true;
+    invalidate();
   }
 
   function renderDetail() {
@@ -273,45 +280,57 @@ export function initTree(data) {
     const anchor = [x - width / 2, y - height / 2];
     pan = [anchor[0] - (anchor[0] - pan[0]) * (zoom / old), anchor[1] - (anchor[1] - pan[1]) * (vertical(zoom) / oldV)];
     anim = null;
-    dirty = true;
+    invalidate();
   }
   function setActive(on) {
     active = on;
     view.classList.toggle("active", on);
-    $("#tree-help").textContent = on
-      ? "Scroll to zoom · drag to explore · select a tank"
-      : matchMedia("(hover: none)").matches
-        ? "Tap a tank · drag sideways to explore · pinch to zoom"
+    const touch = matchMedia("(any-pointer: coarse)").matches;
+    $("#tree-explore").setAttribute("aria-pressed", String(on));
+    $("#tree-explore").textContent = on ? "Done" : "Explore";
+    $("#tree-help").textContent = touch
+      ? on ? "Drag to explore · pinch to zoom · Done returns to page scrolling"
+        : "Tap a tank · drag sideways · Explore enables pinch to zoom"
+      : on ? "Scroll to zoom · drag to explore · select a tank"
         : "Click to explore, then scroll to zoom · drag to pan · select a tank";
   }
+  $("#tree-explore").addEventListener("click", () => setActive(!active));
   canvas.addEventListener("pointerdown", (event) => {
-    setActive(true);
+    if (event.button !== 0 || pointers.size >= 2) return;
+    if (event.pointerType !== "touch") setActive(true);
     const [x, y] = local(event);
     pointers.set(event.pointerId, [x, y]);
     canvas.setPointerCapture(event.pointerId);
     if (pointers.size === 2) {
       const [a, b] = [...pointers.values()];
-      dragging = { pinch: Math.hypot(a[0] - b[0], a[1] - b[1]), zoom };
+      dragging = active ? {
+        pinch: Math.max(1, Math.hypot(a[0] - b[0], a[1] - b[1])),
+        center: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2],
+      } : null;
       return;
     }
-    dragging = { start: [x, y], last: [x, y], moved: false, card: cardAt(x, y) };
+    dragging = { id: event.pointerId, start: [x, y], last: [x, y], moved: false, card: cardAt(x, y) };
   });
   canvas.addEventListener("pointermove", (event) => {
     const [x, y] = local(event);
     if (pointers.has(event.pointerId)) pointers.set(event.pointerId, [x, y]);
     if (dragging?.pinch && pointers.size === 2) {
       const [a, b] = [...pointers.values()];
-      const d = Math.hypot(a[0] - b[0], a[1] - b[1]);
-      zoomAt((dragging.zoom * (d / dragging.pinch)) / zoom, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
+      const d = Math.max(1, Math.hypot(a[0] - b[0], a[1] - b[1]));
+      const center = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      pan = [pan[0] + center[0] - dragging.center[0], pan[1] + center[1] - dragging.center[1]];
+      zoomAt(d / dragging.pinch, ...center);
+      dragging.pinch = d;
+      dragging.center = center;
       return;
     }
-    if (dragging && !dragging.pinch) {
+    if (dragging && dragging.id === event.pointerId) {
       if (Math.hypot(x - dragging.start[0], y - dragging.start[1]) > 4) dragging.moved = true;
       if (dragging.moved) {
         pan = [pan[0] + x - dragging.last[0], pan[1] + y - dragging.last[1]];
         anim = null;
         canvas.classList.add("dragging");
-        dirty = true;
+        invalidate();
       }
       dragging.last = [x, y];
       return;
@@ -321,25 +340,33 @@ export function initTree(data) {
       hovered = over;
       canvas.classList.toggle("on-card", over >= 0);
       canvas.title = over >= 0 ? classes[over].name : "";
-      dirty = true;
+      invalidate();
     }
   });
   const release = (event) => {
-    pointers.delete(event.pointerId);
-    if (dragging && !dragging.pinch && !dragging.moved && dragging.card >= 0) select(dragging.card);
-    if (pointers.size < 2 && dragging?.pinch) dragging = null;
-    if (!pointers.size) dragging = null;
+    if (!pointers.delete(event.pointerId)) return;
+    if (event.type === "pointerup" && dragging?.id === event.pointerId && !dragging.moved && dragging.card >= 0) select(dragging.card);
+    if (dragging?.pinch && pointers.size === 1) {
+      const [id, point] = [...pointers][0];
+      dragging = { id, start: point, last: point, moved: true, card: -1 };
+    } else if (!pointers.size || dragging?.id === event.pointerId) dragging = null;
     canvas.classList.remove("dragging");
   };
   canvas.addEventListener("pointerup", release);
   canvas.addEventListener("pointercancel", release);
+  canvas.addEventListener("lostpointercapture", release);
   canvas.addEventListener("pointerleave", () => {
     if (hovered >= 0) {
       hovered = -1;
-      dirty = true;
+      invalidate();
     }
   });
-  view.addEventListener("pointerleave", () => setActive(false));
+  view.addEventListener("pointerleave", (event) => {
+    if (event.pointerType === "mouse" && !pointers.size) setActive(false);
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (active && !event.target.closest(".tree-grid")) setActive(false);
+  });
   canvas.addEventListener(
     "wheel",
     (event) => {
@@ -371,28 +398,30 @@ export function initTree(data) {
     matches = new Set(hits);
     found.textContent = search.value.trim() ? (hits.length ? `${hits.length} found` : "No tank by that name") : "";
     if (hits.length) select(hits[0], { scroll: true });
-    dirty = true;
+    invalidate();
   });
   search.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       search.value = "";
       matches = new Set();
       found.textContent = "";
-      dirty = true;
+      invalidate();
     }
   });
 
   onVisible(view, (isVisible) => {
     visible = isVisible;
     cancelAnimationFrame(frame);
-    if (visible) {
-      dirty = true;
-      frame = requestAnimationFrame(loop);
-    }
+    frame = 0;
+    if (visible) invalidate();
+    else setActive(false);
   });
   new ResizeObserver(resize).observe(view);
-  document.addEventListener("tankyard:theme", () => (dirty = true));
-  document.fonts?.ready.then(() => (dirty = true));
+  document.addEventListener("tankyard:theme", invalidate);
+  reducedMotion.addEventListener("change", () => {
+    if (anim && reducedMotion.matches) focus(selected, false);
+  });
+  document.fonts?.ready.then(invalidate);
   setActive(false);
   resize();
   renderDetail();

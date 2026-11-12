@@ -115,26 +115,31 @@ function trim(release) {
 // can't be reached or the hourly rate limit is used up, the newer of this
 // browser's last answer and the site's own copy stands in.
 async function fetchRelease() {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 6000);
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 6000);
     const response = await fetch(API, {
       headers: { Accept: "application/vnd.github+json" },
       signal: controller.signal,
     });
-    clearTimeout(timer);
     if (!response.ok) throw new Error(String(response.status));
     const data = trim(await response.json());
     store.set("release", { time: Date.now(), data });
     return { data, source: "live" };
   } catch {
-    const cached = store.get("release")?.data;
-    const snapshot = await loadJSON("data/release.json").then(trim, () => null);
-    const options = [cached, snapshot].filter((release) => release?.assets?.length);
-    if (!options.length) throw new Error("no release data");
-    options.sort((a, b) => b.published_at.localeCompare(a.published_at));
-    return { data: options[0], source: options[0] === cached ? "cached" : "snapshot" };
+    return await savedRelease();
+  } finally {
+    clearTimeout(timer);
   }
+}
+
+async function savedRelease() {
+  const cached = store.get("release")?.data;
+  const snapshot = await loadJSON("data/release.json").then(trim, () => null);
+  const options = [cached, snapshot].filter((release) => Array.isArray(release?.assets) && release.assets.length && typeof release.published_at === "string");
+  if (!options.length) throw new Error("no release data");
+  options.sort((a, b) => b.published_at.localeCompare(a.published_at));
+  return { data: options[0], source: options[0] === cached ? "cached" : "snapshot" };
 }
 
 // The site's copy also carries the notes of the releases before the latest one.
@@ -181,19 +186,29 @@ function announce() {
 }
 
 export async function initRelease() {
-  const [system, result] = await Promise.all([detectSystem(), fetchRelease().catch(() => null)]);
+  // Show the site's own release immediately while GitHub checks for a newer one.
+  const live = fetchRelease().catch(() => null);
+  const [system, saved] = await Promise.all([detectSystem(), savedRelease().catch(() => null)]);
   state.system = system;
   state.picked = defaultPackage(system);
-  if (!result) {
+  wireHero();
+  const show = (result) => {
+    state.release = result.data;
+    state.source = result.source;
+    renderHero();
+    renderNews();
+    emit();
+  };
+  if (saved) show(saved);
+  const result = await live;
+  if (result) show(result);
+  if (!state.release) {
     $("#platform-name").textContent = system.label;
     $("#platform-meta").textContent = "Downloads on GitHub";
+    $("#platform-card").disabled = true;
+    $("#notes").textContent = "Release notes are unavailable. Open the release page to read them on GitHub.";
     return;
   }
-  state.release = result.data;
-  state.source = result.source;
-  renderHero();
-  renderNews();
-  emit();
   announce();
 }
 
@@ -215,18 +230,36 @@ function renderHero() {
   $("#install-count").textContent = `${release.tag_name} · ${date}`;
   renderCard();
   renderPackages();
+}
+
+function wireHero() {
   const button = $("#download");
   button.addEventListener("click", (event) => {
+    if (!state.release) return;
     if (!state.picked) {
       event.preventDefault();
-      if (system.mobile) shareLink(button);
+      if (state.system.mobile) shareLink(button);
       else openList(true);
       return;
     }
     started(state.picked);
   });
   $("#platform-card").addEventListener("click", () => openList());
+  document.addEventListener("pointerdown", (event) => {
+    if (!event.target.closest("#platform-card, #packages")) openList(false);
+  });
   document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !$("#packages").hidden) {
+      openList(false);
+      $("#platform-card").focus({ preventScroll: true });
+      return;
+    }
+    if (event.key === "ArrowDown" && event.target === $("#platform-card")) {
+      event.preventDefault();
+      openList(true);
+      $("#packages a")?.focus({ preventScroll: true });
+      return;
+    }
     if (event.key !== "Enter" || event.target !== document.body || event.repeat) return;
     if (window.scrollY > innerHeight * 0.5) return;
     button.click();
@@ -238,7 +271,8 @@ function renderCard() {
   const button = $("#download");
   $("#platform-name").textContent = system.label;
   if (picked) {
-    const { file, text } = packageLabel(picked);
+    const { pkg, file, text } = packageLabel(picked);
+    if (pkg.os !== system.os) $("#platform-name").textContent = OS_NAMES[pkg.os];
     $("#platform-meta").innerHTML = "";
     $("#platform-meta").append(h("span", { class: "long", text: text.split(" · ").slice(0, 2).join(" · ") + " · " }), text.split(" · ").pop());
     button.href = file?.browser_download_url || state.release.html_url;
@@ -247,7 +281,7 @@ function renderCard() {
   } else if (system.mobile) {
     $("#platform-meta").textContent = "Desktop only";
     button.href = location.href.split("#")[0];
-    button.textContent = "Copy link for your computer";
+    button.textContent = navigator.share ? "Share link for your computer" : "Copy link for your computer";
   } else {
     $("#platform-meta").textContent = "Pick a download";
     button.href = state.release.html_url;
@@ -311,8 +345,8 @@ async function shareLink(button) {
     try {
       await navigator.share({ title: "Tank Yard", url });
       return;
-    } catch {
-      /* closed the share sheet: fall back to copying */
+    } catch (error) {
+      if (error.name === "AbortError") return;
     }
   }
   const ok = await copyText(url);
@@ -347,12 +381,12 @@ function renderNews() {
     const name = h("td", {}, h("a", { href: file.browser_download_url, text: file.name }));
     if (sum) {
       name.append(
-        h("span", {
+        h("button", {
+          type: "button",
           class: "sum",
           text: sum.slice(0, 16) + "…" + sum.slice(-8),
           title: "SHA-256: " + sum,
-          role: "button",
-          tabindex: "0",
+          "aria-label": `Copy SHA-256 checksum for ${file.name}`,
           onclick: async (event) => {
             const ok = await copyText(sum);
             event.target.textContent = ok ? "SHA-256 copied" : sum;

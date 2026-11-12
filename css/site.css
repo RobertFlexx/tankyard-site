@@ -162,7 +162,7 @@ pre,
 #arena {
   position: fixed;
   inset: 0;
-  width: 100%;
+  width: 100vw;
   height: 100%;
   z-index: 0;
   touch-action: manipulation;
@@ -173,6 +173,7 @@ pre,
 .page-bg {
   position: fixed;
   inset: 0;
+  width: 100vw;
   z-index: 1;
   pointer-events: none;
   background-color: var(--bg);
@@ -473,7 +474,7 @@ pre,
 .toasts {
   position: fixed;
   left: 50%;
-  top: 24px;
+  top: max(24px, env(safe-area-inset-top));
   z-index: 60;
   display: grid;
   gap: 10px;
@@ -508,6 +509,7 @@ pre,
 .achievement strong {
   font-size: 20px;
   line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 .achievement span {
   grid-column: 2 / -1;
@@ -518,6 +520,25 @@ pre,
 .achievement .btn {
   grid-row: 1 / 3;
   grid-column: 3;
+}
+@media (max-width: 480px) {
+  .achievement {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+  .achievement small,
+  .achievement strong {
+    grid-column: 2;
+  }
+  .achievement span {
+    grid-row: 3;
+    grid-column: 2;
+  }
+  .achievement .btn {
+    grid-row: 4;
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 6px;
+  }
 }
 @keyframes toast-in {
   from {
@@ -592,7 +613,7 @@ pre,
 }
 .pane {
   position: relative;
-  width: min(510px, calc(100vw - 32px));
+  width: min(510px, calc(100% - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
   margin: 0 auto;
   padding-top: var(--top);
 }
@@ -611,6 +632,10 @@ pre,
 .release-field {
   justify-content: space-between;
   gap: 12px;
+  line-height: 1.2;
+  height: auto;
+  min-height: 44px;
+  padding-block: 6px;
   text-decoration: none;
   cursor: pointer;
   transition: border-color 0.18s;
@@ -623,12 +648,25 @@ pre,
 .release-field .notes {
   white-space: nowrap;
 }
+.release-field > span:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  min-width: 0;
+}
+.release-field .version {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
 .release-field .date {
-  margin-left: 10px;
   font-size: 13px;
   color: var(--muted);
 }
 .release-field .notes {
+  flex: none;
+  padding: 0;
   font-size: 13px;
   color: var(--muted);
   white-space: nowrap;
@@ -789,7 +827,7 @@ pre,
 }
 .badge {
   display: grid;
-  grid-template-columns: 52px 1fr;
+  grid-template-columns: 52px minmax(0, 1fr);
   align-items: center;
   gap: 2px 10px;
   width: 336px;
@@ -810,6 +848,7 @@ pre,
 }
 .badge strong {
   font-size: 14px;
+  overflow-wrap: anywhere;
 }
 .badge span {
   overflow: hidden;
@@ -849,7 +888,7 @@ pre,
 @media (max-width: 1239px), (max-height: 700px) {
   .menu .badge {
     position: static;
-    width: min(510px, calc(100vw - 32px));
+    width: min(510px, calc(100% - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
     margin: 28px auto 0;
   }
   .hud {
@@ -887,8 +926,6 @@ pre,
     padding-right: 0;
   }
   .page-head .os-tabs {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
   }
   .play-row {
@@ -896,8 +933,12 @@ pre,
   }
   .play-row .play {
     flex-basis: 100%;
+    min-width: 0;
     min-height: 52px;
+    padding-block: 10px;
     font-size: 18px;
+    text-align: center;
+    white-space: normal;
   }
   .play-row .side {
     flex: 1;
@@ -906,10 +947,49 @@ pre,
     font-size: 15px;
   }
   .theme-row .status {
+    min-width: 0;
+    font-size: 12px;
+    white-space: normal;
+  }
+  .theme-row .btn {
+    flex: none;
+    width: auto;
+  }
+  .release-field {
+    height: auto;
+    min-height: 48px;
+    padding-block: 6px;
+  }
+  .release-field .date {
+    margin-left: 0;
     font-size: 12px;
   }
   .server-card .meta .long {
     display: none;
+  }
+  .server-card {
+    height: auto;
+    min-height: 48px;
+    padding-block: 8px;
+  }
+  .server-card .name {
+    font-size: 18px;
+    line-height: 1.2;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  .lobby {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+  .lobby .meter {
+    display: none;
+  }
+  .lobby .detail {
+    white-space: normal;
+  }
+  .lobby.more {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
   .bottom-row .btn:nth-child(1) {
     width: 31%;
@@ -1036,7 +1116,7 @@ h3 {
 
 @media (max-width: 900px) {
   .wrap {
-    padding: 0 16px;
+    padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
   }
   .brand {
     font-size: 38px;
@@ -1072,6 +1152,16 @@ h3 {
   min-height: 34px;
   font-size: 15px;
 }
+@media (max-width: 600px) {
+  .page-head .os-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .os-tabs .btn {
+    min-width: 0;
+    padding-inline: 4px;
+  }
+}
 .methods {
   margin: 12px 0 18px;
 }
@@ -1089,6 +1179,7 @@ h3 {
   align-items: start;
 }
 .steps {
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1102,6 +1193,7 @@ h3 {
   border: 1px solid var(--line);
   border-left: 4px solid transparent;
   cursor: pointer;
+  overflow-wrap: anywhere;
   transition:
     background-color 0.18s,
     border-color 0.18s;
@@ -1157,6 +1249,12 @@ h3 {
   gap: 8px;
   margin-top: 10px;
 }
+.step .row .btn {
+  max-width: 100%;
+  padding-block: 6px;
+  text-align: center;
+  white-space: normal;
+}
 .command {
   display: flex;
   align-items: stretch;
@@ -1179,6 +1277,7 @@ h3 {
   border-width: 0 0 0 1px;
 }
 .scene-col {
+  min-width: 0;
   position: sticky;
   top: 76px;
 }
@@ -1207,6 +1306,10 @@ h3 {
   align-items: center;
   gap: 10px;
   margin-top: 10px;
+}
+.scene-bar > span:last-child {
+  display: flex;
+  gap: 4px;
 }
 .scene-bar .capsule {
   height: 18px;
@@ -1258,7 +1361,7 @@ h3 {
 }
 @media (max-width: 1000px) {
   .install-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .scene-col {
     position: static;
@@ -2102,7 +2205,7 @@ h3 {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(330px, 32%, 420px);
-  grid-template-rows: 54px minmax(0, 1fr) 152px;
+  grid-template-rows: auto minmax(0, 1fr) 152px;
   height: clamp(560px, 64vw, 780px);
   overflow: hidden;
   background: var(--surface);
@@ -2116,15 +2219,19 @@ h3 {
 .ws-top {
   grid-column: 1 / -1;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  min-height: 54px;
   gap: 6px;
-  padding: 0 10px 0 16px;
+  padding: 8px 10px 8px 16px;
   background: var(--surface);
   border-bottom: 1px solid var(--line);
 }
 .ws-name {
+  flex: none;
   margin-right: auto;
   line-height: 1.15;
+  white-space: nowrap;
 }
 .ws-name small {
   display: block;
@@ -2204,8 +2311,11 @@ h3 {
   position: absolute;
   top: 10px;
   left: 50%;
+  width: max-content;
+  max-width: calc(100% - 20px);
   padding: 4px 12px;
   font-size: 13px;
+  text-align: center;
   background: var(--surface);
   border: 1px solid var(--accent);
   transform: translateX(-50%);
@@ -2215,16 +2325,19 @@ h3 {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  min-width: 0;
   background: var(--surface);
   border-left: 1px solid var(--line);
 }
 .ws-tabs {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 3px;
   padding: 9px 8px 8px;
 }
 .ws-tabs .btn {
+  flex: 1 1 auto;
+  min-width: 0;
   min-height: 26px;
   padding: 0 2px;
   font-size: 11px;
@@ -2263,19 +2376,21 @@ h3 {
   border: 1px solid #00b2e1;
 }
 .ws-controls {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto auto;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 7px;
   margin: 8px 12px 0;
 }
 .ws-controls .btn {
+  flex: none;
   min-height: 26px;
   min-width: 30px;
   padding: 0 7px;
   font-size: 12px;
 }
 .ws-controls .time {
+  flex: none;
   font-size: 11px;
   color: var(--muted);
   white-space: nowrap;
@@ -2283,6 +2398,8 @@ h3 {
 }
 .ws-seek {
   position: relative;
+  flex: 1 1 60px;
+  min-width: 40px;
   height: 18px;
   padding: 2px;
   cursor: pointer;
@@ -2563,11 +2680,33 @@ h3 {
   .ws-side {
     border-left: 0;
   }
+  #ws-big {
+    display: none;
+  }
   .ws-chapters {
     max-height: 340px;
   }
   .ws-under {
     grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 400px) {
+  .ws-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .scene-bar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .scene-bar .counter {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: center;
+  }
+  .scene-bar > span:last-child {
+    grid-column: 3;
+    grid-row: 1 / 3;
   }
 }
 
@@ -2614,6 +2753,9 @@ h3 {
 }
 .tree-view.active canvas {
   touch-action: none;
+}
+#tree-explore {
+  display: none;
 }
 .tree-view canvas.dragging {
   cursor: grabbing;
@@ -2700,7 +2842,7 @@ h3 {
 /* Bosses */
 .boss-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: 8px;
 }
 .boss {
@@ -2830,7 +2972,7 @@ h3 {
 }
 .practice {
   display: grid;
-  grid-template-columns: 64px 1fr;
+  grid-template-columns: 64px minmax(0, 1fr);
   gap: 4px 14px;
   padding: 12px 16px 14px 12px;
   background: var(--panel);
@@ -2845,6 +2987,7 @@ h3 {
 .practice h3 {
   margin: 0;
   font-size: 16px;
+  overflow-wrap: anywhere;
 }
 .practice p {
   margin: 0;
@@ -3005,12 +3148,16 @@ h3 {
 }
 .code-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 8px;
 }
 .code-tabs .btn {
   min-height: 30px;
   font-size: 13px;
+  max-width: 100%;
+  padding-block: 6px;
+  white-space: normal;
 }
 .code {
   margin: 0;
@@ -3155,6 +3302,7 @@ h3 {
 }
 .notes {
   padding: 20px 26px 12px;
+  overflow-wrap: anywhere;
 }
 .notes h1 {
   display: none;
@@ -3231,6 +3379,11 @@ h3 {
   font-family: var(--mono);
   font-size: 10.5px;
   font-weight: 400;
+  padding: 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+  background: none;
+  border: 0;
   color: var(--muted);
   cursor: copy;
 }
@@ -3261,6 +3414,7 @@ h3 {
   margin: 10px 0 0;
   font-size: 22px;
   word-spacing: 0.1em;
+  overflow-wrap: anywhere;
 }
 .credits .built i {
   margin: 0 0.45em;
@@ -3297,6 +3451,90 @@ h3 {
 }
 .site-foot a.fine-link {
   color: var(--muted);
+}
+
+/* Keep the compact desktop controls comfortable to use with a finger. */
+@media (any-pointer: coarse) {
+  .btn,
+  .btn.small,
+  .four .btn,
+  .five .btn,
+  .theme-row .btn,
+  .bottom-row .btn,
+  .tabs .btn,
+  .os-tabs .btn,
+  .methods .btn,
+  .command .btn,
+  .scene-bar .btn,
+  .ws-top .btn,
+  .ws-tabs .btn,
+  .ws-controls .btn,
+  .ws-cats .btn,
+  .ws-group .btn,
+  .ws-opts .btn,
+  .ws-modes .btn,
+  .tree-tools .btn,
+  .chips .btn,
+  .arena-bar .btn,
+  .server-panel .modes .btn,
+  .code-tabs .btn,
+  .site-foot .btn {
+    min-height: 44px;
+  }
+  .lobby,
+  .ws-chapters button {
+    min-height: 44px;
+  }
+  .tree-tools .field {
+    height: 44px;
+    font-size: 16px;
+  }
+  #tree-explore {
+    display: inline-flex;
+  }
+  .tree-view {
+    height: clamp(280px, 60svh, 640px);
+  }
+  .workshop {
+    min-height: 620px;
+    grid-template-rows: auto minmax(280px, 1fr) 176px;
+  }
+  .ws-seek {
+    height: 44px;
+    padding: 15px 3px;
+    background: transparent;
+  }
+  .ws-seek::before {
+    content: "";
+    position: absolute;
+    inset: 13px 0;
+    border-radius: 999px;
+    background: var(--outline);
+  }
+  .ws-seek .ticks {
+    inset: 15px 3px;
+  }
+  .range {
+    height: 44px;
+  }
+  .range::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+    margin-top: -9px;
+  }
+  .range::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+  }
+  .files .sum {
+    min-height: 44px;
+  }
+}
+@media (max-width: 860px) and (any-pointer: coarse) {
+  .workshop {
+    min-height: 0;
+    grid-template-rows: auto;
+  }
 }
 
 /* Death screen (404) */

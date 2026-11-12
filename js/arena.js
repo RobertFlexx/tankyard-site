@@ -128,7 +128,7 @@ export function initArena(models) {
 
   function resize() {
     ratio = Math.min(devicePixelRatio || 1, 2);
-    width = innerWidth;
+    width = document.documentElement.clientWidth;
     height = innerHeight;
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
@@ -519,7 +519,8 @@ export function initArena(models) {
   }
 
   function update() {
-    const want = !document.hidden && heroVisible() && !reducedMotion.matches;
+    const visible = heroVisible();
+    const want = !document.hidden && visible && !reducedMotion.matches;
     if (want && !running) {
       running = true;
       last = 0;
@@ -530,8 +531,8 @@ export function initArena(models) {
       running = false;
       cancelAnimationFrame(frame);
     }
-    if (!running) draw(0);
-    hud.style.opacity = heroVisible() && you.kills ? "1" : "0";
+    if (!running && visible && !document.hidden) draw(0);
+    hud.style.opacity = visible && you.kills ? "1" : "0";
   }
 
   // Shooting: the canvas sits under the menu, so empty parts of the title
@@ -560,7 +561,7 @@ export function initArena(models) {
       pointer = [event.clientX, event.clientY];
       pointerSeen = performance.now() / 1000;
       canvas.classList.toggle("aiming", inHero(event.clientY) && event.target === canvas);
-      if (!running && reducedMotion.matches) {
+      if (!running && reducedMotion.matches && heroVisible() && !document.hidden) {
         const [cx, cy] = tankCenter();
         you.aim = Math.atan2(pointer[1] - cy, pointer[0] - cx);
         draw(0);

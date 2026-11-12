@@ -1,5 +1,5 @@
 // Starts each part of the page. A part that fails leaves the rest working.
-import { $, $$, loadJSON, wireCopyButtons, typing, clamp } from "./util.js";
+import { $, $$, loadJSON, wireCopyButtons, typing, clamp, reducedMotion } from "./util.js";
 import { initRelease } from "./release.js";
 import { initArena } from "./arena.js";
 import { initInstall } from "./install.js";
@@ -67,7 +67,7 @@ function onScroll() {
   current.setAttribute("aria-current", "true");
   const bar = $("#tabs-bar");
   if (bar.scrollWidth > bar.clientWidth) {
-    bar.scrollTo({ left: current.offsetLeft - (bar.clientWidth - current.offsetWidth) / 2, behavior: "smooth" });
+    bar.scrollTo({ left: current.offsetLeft - (bar.clientWidth - current.offsetWidth) / 2, behavior: reducedMotion.matches ? "instant" : "smooth" });
   }
 }
 addEventListener(
@@ -123,7 +123,9 @@ if (tanks && bosses && game) {
 
 // Opened with a #section link: the sections above have filled in by now, so land there again.
 if (location.hash.length > 1) {
-  const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  let id = location.hash.slice(1);
+  try { id = decodeURIComponent(id); } catch { /* A malformed fragment is still a valid page visit. */ }
+  const target = document.getElementById(id);
   if (target && target !== $("#top")) target.scrollIntoView({ behavior: "instant" });
 }
 onScroll();

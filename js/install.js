@@ -25,12 +25,17 @@ class Stage {
   }
   reset() {
     this.token++;
+    this.root.getAnimations({ subtree: true }).forEach((animation) => animation.cancel());
     this.root.innerHTML = "";
     this.cursor = h("div", { class: "s-cursor", html: CURSOR });
     this.cursor.style.transform = "translate(470px, 300px)";
     this.pos = [470, 300];
     this.root.append(this.cursor);
     return this.token;
+  }
+  pause() {
+    this.token++;
+    this.root.getAnimations({ subtree: true }).forEach((animation) => animation.pause());
   }
   live(token) {
     if (token !== this.token) throw CANCEL;
@@ -70,9 +75,9 @@ class Stage {
       fill: "forwards",
     });
     await animation.finished.catch(() => {});
+    this.live(token);
     this.cursor.style.transform = to;
     animation.cancel();
-    this.live(token);
   }
   async click(target, { double = false, press } = {}) {
     if (target) await this.move(target);
@@ -110,8 +115,9 @@ class Stage {
     const token = this.token;
     const animation = bar.animate([{ width: "0%" }, { width: "100%" }], { duration: ms, easing: "cubic-bezier(.3,.1,.4,1)", fill: "forwards" });
     await animation.finished.catch(() => {});
-    bar.style.width = "100%";
     this.live(token);
+    bar.style.width = "100%";
+    animation.cancel();
   }
 }
 
@@ -897,6 +903,8 @@ export function initInstall(models) {
   let playing = !reducedMotion.matches;
   let visible = false;
   let done = new Set();
+  let followsSystem = true;
+  let buildVersion = 0;
 
   const fit = () => {
     S.k = sceneEl.clientWidth / 640;
@@ -910,6 +918,7 @@ export function initInstall(models) {
   }
 
   function build() {
+    buildVersion++;
     const tag = release.release?.tag_name || "v0.15.2";
     list = methods(os, file, tag);
     method = Math.min(method, list.length - 1);
@@ -929,6 +938,7 @@ export function initInstall(models) {
             type: "button",
             "aria-pressed": String(i === method),
             onclick: () => {
+              followsSystem = false;
               method = i;
               done = new Set();
               build();
@@ -961,7 +971,11 @@ export function initInstall(models) {
               text: `${pkg.kind} · ${pkg.arch} · ${formatSize(f.size)}`,
               onclick: () => {
                 done.add(0);
-                setTimeout(() => go(1), 600);
+                const version = buildVersion;
+                const selectedStep = index;
+                setTimeout(() => {
+                  if (version === buildVersion && index === selectedStep) go(1);
+                }, 600);
               },
             }),
           );
@@ -987,14 +1001,15 @@ export function initInstall(models) {
       item.classList.toggle("current", j === index);
       item.classList.toggle("done", j !== index && done.has(j));
     });
-    if (user && window.innerWidth <= 1000) sceneEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (user && window.innerWidth <= 1000) sceneEl.scrollIntoView({ block: "nearest", behavior: reducedMotion.matches ? "instant" : "smooth" });
     $("#scene-counter").textContent = `Step ${index + 1} of ${steps.length}`;
     $("#scene-fill").style.width = `${((index + 1) / steps.length) * 100}%`;
     sceneEl.setAttribute("aria-label", `Animation: ${steps[index].title}`);
     const token = S.reset();
-    S.instant = reducedMotion.matches || !visible;
+    S.instant = reducedMotion.matches || !visible || !playing;
     try {
       await steps[index].scene(S);
+      if (!playing) S.pause();
       if (S.instant || !playing) return;
       await S.wait(2600);
       if (token === S.token && playing && visible) go(index + 1 < steps.length ? index + 1 : 0);
@@ -1008,11 +1023,13 @@ export function initInstall(models) {
     playButton.textContent = on ? "Pause" : "Play";
     playButton.setAttribute("aria-pressed", String(on));
     if (on) go(index);
+    else S.pause();
   }
 
   $("#os-tabs").addEventListener("click", (event) => {
     const button = event.target.closest("[data-os]");
     if (!button || button.dataset.os === os) return;
+    followsSystem = false;
     os = button.dataset.os;
     method = 0;
     done = new Set();
@@ -1021,6 +1038,7 @@ export function initInstall(models) {
   });
   $("#os-tabs").addEventListener("keydown", (event) => {
     if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+    event.preventDefault();
     const order = ["windows", "mac", "linux"];
     const next = order[(order.indexOf(os) + (event.key === "ArrowRight" ? 1 : 2)) % 3];
     $(`#os-tabs [data-os="${next}"]`).click();
@@ -1030,9 +1048,16 @@ export function initInstall(models) {
   $("#scene-next").addEventListener("click", () => go(index + 1, true));
   playButton.addEventListener("click", () => setPlaying(!playing));
   if (!playing) setPlaying(false);
+  reducedMotion.addEventListener("change", () => {
+    if (reducedMotion.matches) {
+      setPlaying(false);
+      go(index);
+    }
+  });
 
   document.addEventListener("tankyard:download", (event) => {
     const { os: picked, method: kind } = event.detail;
+    followsSystem = false;
     os = picked;
     const found = methods(os, file, release.release?.tag_name || "v0.15.2").findIndex((m) => m.id === kind);
     method = found < 0 ? 0 : found;
@@ -1055,8 +1080,8 @@ export function initInstall(models) {
   build();
   go(0);
   onChange(() => {
-    os = release.system.os || "windows";
+    if (followsSystem) os = release.system.os || "windows";
     build();
-    go(0);
+    go(index);
   });
 }

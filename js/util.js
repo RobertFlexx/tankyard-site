@@ -39,8 +39,9 @@ export const store = {
   set(key, value) {
     try {
       localStorage.setItem("tankyard-" + key, JSON.stringify(value));
+      return true;
     } catch {
-      /* private mode or storage off: nothing to keep */
+      return false;
     }
   },
 };
@@ -106,7 +107,8 @@ export async function copyText(text) {
     await navigator.clipboard.writeText(text);
     return true;
   } catch {
-    const area = h("textarea", { style: { position: "fixed", opacity: "0" } }, text);
+    const active = document.activeElement;
+    const area = h("textarea", { readonly: true, style: { position: "fixed", left: "0", top: "0", fontSize: "16px", opacity: "0" } }, text);
     document.body.append(area);
     area.select();
     let ok = false;
@@ -116,24 +118,33 @@ export async function copyText(text) {
       ok = false;
     }
     area.remove();
+    active?.focus?.({ preventScroll: true });
     return ok;
   }
 }
 
 // Watch whether an element is on screen; returns a function to stop watching.
 export function onVisible(element, callback, threshold = 0) {
-  if (!("IntersectionObserver" in window)) {
-    callback(true);
-    return () => {};
-  }
-  const observer = new IntersectionObserver(
+  let inView = !("IntersectionObserver" in window);
+  let lastEntry;
+  const update = () => callback(inView && !document.hidden, lastEntry);
+  const observer = "IntersectionObserver" in window ? new IntersectionObserver(
     (entries) => {
-      for (const entry of entries) callback(entry.isIntersecting, entry);
+      for (const entry of entries) {
+        lastEntry = entry;
+        inView = entry.isIntersecting;
+        update();
+      }
     },
     { threshold },
-  );
-  observer.observe(element);
-  return () => observer.disconnect();
+  ) : null;
+  if (observer) observer.observe(element);
+  else update();
+  document.addEventListener("visibilitychange", update);
+  return () => {
+    observer?.disconnect();
+    document.removeEventListener("visibilitychange", update);
+  };
 }
 
 // The Achievement card the game shows after a first round.
@@ -168,17 +179,24 @@ export function toast({ kicker = "Achievement unlocked", title, text = "", actio
 
 // "Copy" buttons that copy the code element just before them.
 export function wireCopyButtons(root = document) {
+  const pending = new WeakMap();
   root.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-copy-prev], [data-copy]");
     if (!button) return;
+    const previous = pending.get(button);
+    if (previous?.busy) return;
+    clearTimeout(previous?.timer);
+    const entry = { label: previous?.label ?? button.textContent, busy: true };
+    pending.set(button, entry);
     const text = button.dataset.copy ?? button.previousElementSibling?.textContent ?? "";
     const ok = await copyText(text.trim());
-    const label = button.textContent;
-    button.textContent = ok ? "Copied" : "Press Ctrl+C";
+    entry.busy = false;
+    button.textContent = ok ? "Copied" : "Copy failed";
     button.classList.add("on");
-    setTimeout(() => {
-      button.textContent = label;
+    entry.timer = setTimeout(() => {
+      button.textContent = entry.label;
       button.classList.remove("on");
+      pending.delete(button);
     }, 1400);
   });
 }
