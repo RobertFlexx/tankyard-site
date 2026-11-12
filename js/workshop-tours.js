@@ -50,7 +50,7 @@ export const TOURS = {
     chapters: WORKSHOP_CHAPTERS, captions: WORKSHOP_CAPTIONS },
   logic: {
   "title": "Logic gates",
-  "label": "Logic gates tour · next release",
+  "label": "Logic gates tour · 0.16",
   "duration": 101.63,
   "poster": "media/logic-gates-poster.jpg",
   "file": "logic-gates-tutorial",

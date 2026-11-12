@@ -1066,7 +1066,7 @@ export function initInstall(models) {
 
   function build() {
     buildVersion++;
-    const tag = release.release?.tag_name || "v0.15.2";
+    const tag = release.release?.tag_name || "v0.16.0";
     list = methods(os, file, tag);
     method = Math.min(method, list.length - 1);
     $$("#os-tabs .btn").forEach((b) => {
@@ -1206,7 +1206,7 @@ export function initInstall(models) {
     const { os: picked, method: kind } = event.detail;
     followsSystem = false;
     os = picked;
-    const found = methods(os, file, release.release?.tag_name || "v0.15.2").findIndex((m) => m.id === kind);
+    const found = methods(os, file, release.release?.tag_name || "v0.16.0").findIndex((m) => m.id === kind);
     method = found < 0 ? 0 : found;
     done = new Set([0]);
     build();

@@ -1470,7 +1470,7 @@ export function initWorkshop(models) {
     video.load();
     renderTour();
     $$("[data-tour]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.tour === id)));
-    $("#ws-tour-note").textContent = id === "logic" ? "Preview of the next release. In the demo, levers connect directly to gates. The game supports full signal wiring." : "The original workshop tour. Choose Logic gates for the new vault circuit.";
+    $("#ws-tour-note").textContent = id === "logic" ? "New in 0.16. In the demo, levers connect directly to gates. The game supports full signal wiring." : "The original workshop tour. Choose Logic gates for the new vault circuit.";
     syncVideo();
     syncButtons();
   }

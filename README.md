@@ -18,8 +18,8 @@ has signals, watchers, counters and scripts for building larger circuits.
 
 Choose **Getting started** for the full editor tour or **Logic gates** for the
 vault walkthrough. Both have chapter buttons and captions. The logic tour
-previews Tank Yard 0.16; the download button always offers the latest published
-release.
+covers the gates added in Tank Yard 0.16; the download button always offers the
+latest published release.
 
 Follow the [written vault tutorial](https://github.com/RobertFlexx/tankyard/blob/main/docs/logic-gates-tutorial.md)
 to build the circuit in the game, or read the
