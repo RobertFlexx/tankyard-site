@@ -1,6 +1,6 @@
 # Tank Yard website
 
-The website for Tank Yard, a free, open-source tank arena for Windows, macOS, and Linux.
+The website for Tank Yard, a free, open-source tank arena for Windows, macOS, Linux and FreeBSD.
 
 Download the latest release, follow installation guides, and explore the tank tree,
 bosses, and game modes. Build and playtest your own map in the interactive Arena Workshop.

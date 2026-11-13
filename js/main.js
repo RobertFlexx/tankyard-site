@@ -1,6 +1,7 @@
 // Starts each part of the page. A part that fails leaves the rest working.
 import { $, $$, loadJSON, wireCopyButtons, typing, clamp, reducedMotion } from "./util.js";
 import { initRelease } from "./release.js";
+import { initCelebration } from "./celebrate.js";
 import { initArena } from "./arena.js";
 import { initInstall } from "./install.js";
 import { initWorkshop } from "./workshop.js";
@@ -88,6 +89,7 @@ wireCopyButtons();
 /* ---------- Data-driven parts ---------- */
 
 boot("release", () => initRelease().catch((error) => console.error(error)));
+boot("celebration", initCelebration);
 boot("server", initServer);
 boot("mods", initMods);
 

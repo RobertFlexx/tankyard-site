@@ -3276,6 +3276,69 @@ h3 {
 .earlier {
   margin-top: 18px;
 }
+
+/* Tank Yard 1.0: the title's tag, the thank-you and the shape burst. */
+.menu h1 .title-text {
+  position: relative;
+  display: inline-block;
+}
+.milestone {
+  position: absolute;
+  top: -2px;
+  left: 100%;
+  margin-left: 10px;
+  padding: 4px 8px 5px;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--card-ink);
+  white-space: nowrap;
+  background: var(--amber);
+  border: 2px solid var(--outline);
+  transform: rotate(-8deg);
+}
+.milestone-card {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  margin-bottom: 18px;
+  padding: 18px 26px;
+  border-color: var(--accent);
+}
+.milestone-card p {
+  margin: 0;
+  font-size: 14px;
+}
+.celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .milestone {
+    margin-left: 6px;
+    padding: 3px 6px 4px;
+    font-size: 12px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .milestone {
+    animation: milestone-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+}
+@keyframes milestone-in {
+  from {
+    opacity: 0;
+    transform: rotate(-8deg) scale(0.4);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #celebrate {
+    display: none;
+  }
+}
 .earlier > .label {
   display: block;
   margin-bottom: 8px;
