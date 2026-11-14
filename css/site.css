@@ -4001,6 +4001,61 @@ h3 {
   gap: 6px;
 }
 
+/* Effects (1.1): the lab, sound list and swatches reuse the motions layout. */
+.effects {
+  margin-top: 36px;
+}
+.fx-lab {
+  margin-top: 22px;
+}
+.fx-view {
+  display: block;
+  width: 100%;
+  height: 300px;
+}
+.fx-row {
+  display: grid;
+  grid-template-columns: auto minmax(150px, 1fr) minmax(150px, 1fr);
+  align-items: end;
+  gap: 12px 24px;
+}
+.fx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.fx-swatch i {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin-right: 6px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+}
+.fx-lab .note {
+  margin: 0;
+}
+/* Grows to match the launch card beside it. */
+.fx-wave {
+  display: block;
+  flex: 1 1 96px;
+  width: 100%;
+  height: auto;
+  min-height: 96px;
+  aspect-ratio: auto;
+  border: 1px solid var(--line);
+}
+.fx-sound-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.fx-sound-list .btn {
+  padding: 0 4px;
+}
+.piece-text .fx-play {
+  margin-top: 6px;
+}
+
 @media (max-width: 1100px) {
   .ease-curves {
     grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -4013,6 +4068,15 @@ h3 {
   }
 }
 @media (max-width: 860px) {
+  .fx-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .fx-chips {
+    grid-column: 1 / -1;
+  }
+  .fx-view {
+    height: 240px;
+  }
   .ease-lab {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
@@ -4054,6 +4118,12 @@ h3 {
   }
 }
 @media (max-width: 480px) {
+  .fx-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fx-sound-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .ease-curves {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -4066,5 +4136,45 @@ h3 {
   }
   .chain-steps b {
     min-width: 84px;
+  }
+}
+
+/* Guided effects examples use the Motion cards and their shared canvas loop. */
+#effects-tutorial {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 12px;
+}
+#effects-tutorial .motions-head > h4 {
+  font-size: 20px;
+}
+#effects-tutorial .motions-head > .lead {
+  margin-top: 12px;
+}
+.fx-tutorial-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin: 24px 0;
+}
+.fx-tutorial-grid .motions-card {
+  min-width: 0;
+}
+.fx-tutorial-grid canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 32 / 17;
+}
+.fx-demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+@media (max-width: 760px) {
+  .fx-tutorial-grid {
+    grid-template-columns: 1fr;
   }
 }

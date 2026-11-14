@@ -179,8 +179,12 @@ cargo build --locked --release --workspace
     <div class="page-head">
       <h2 id="workshop-title">Arena Workshop</h2>
       <span class="count">The map editor inside the game</span>
+      <div class="actions">
+        <a class="btn small" href="#motions">Motion examples</a>
+        <a class="btn small" href="#effects-tutorial">Animate tutorial</a>
+      </div>
     </div>
-    <p class="lead">Build arenas with blocks, pads, conveyors, portals, lights, moving cover and map logic, then test them in place. <span class="wide-only">This copy of the editor works: draw some walls, then press <b>Playtest</b>. The tour on the right is the real thing.</span><span class="narrow-only">The tour below is the real thing. On a larger screen, this section is also a working copy of the editor.</span></p>
+    <p class="lead">Build arenas with blocks, pads, conveyors, portals, launch pads, lights, moving cover, effects and map logic, then test them in place. <span class="wide-only">This copy of the editor works: draw some walls, then press <b>Playtest</b>. The tour on the right is the real thing.</span><span class="narrow-only">The tour below is the real thing. On a larger screen, this section is also a working copy of the editor.</span></p>
     <div class="workshop" id="ws">
       <div class="ws-top">
         <div class="ws-name"><small>ARENA WORKSHOP</small><b>My arena</b><em id="ws-state">Draft</em></div>
@@ -264,15 +268,15 @@ cargo build --locked --release --workspace
         </div>
       </div>
     </div>
-    <p class="ws-tour-note"><a href="https://github.com/RobertFlexx/tankyard/blob/main/docs/bacteria.md">Bacteria in 1.0.1</a> escapes into a private maze for ten seconds to repair and reposition.</p>
+    <p class="ws-tour-note"><a href="https://github.com/RobertFlexx/tankyard/blob/main/docs/bacteria.md">Bacteria</a> escapes into a private maze of rooms for ten seconds to repair and reposition. Since 1.1, doubles of your tank wake up in there and hunt you down.</p>
     <div class="ws-under">
       <div class="panel">
         <span class="label accent">Build</span>
-        <p>Eight block styles, seven kinds of pad, decor with particle effects, and spawn, base and objective markers. Click for one grid cell, or drag to draw a wall of any size.</p>
+        <p>Eight block styles, eight kinds of pad, decor with particle effects, and spawn, base and objective markers. Click for one grid cell, or drag to draw a wall of any size.</p>
       </div>
       <div class="panel">
         <span class="label accent">Logic</span>
-        <p>Plates, timers, counters, gates and levers change groups of objects, and <a href="#motions">motions</a> glide, turn and fade them. P runs the logic in place; Shift+F5 playtests from the pointer.</p>
+        <p>Plates, timers, counters, gates and levers change groups of objects, <a href="#motions">motions</a> glide, turn and fade them, and <a href="#effects">effects</a> animate, color and resize their decor. P runs the logic in place; Shift+F5 playtests from the pointer.</p>
       </div>
       <div class="panel">
         <span class="label accent">Share</span>
@@ -462,6 +466,237 @@ cargo build --locked --release --workspace
           <p><b>Back where you were.</b> The workshop remembers the palette tab and item, the inspector tab, the preview's speed and where you were looking.</p>
         </li>
       </ul>
+    </section>
+
+    <section class="motions effects" id="effects" aria-labelledby="effects-title">
+      <div class="motions-head">
+        <span class="label accent">New in 1.1</span>
+        <h3 id="effects-title">Effects, launch pads and sounds</h3>
+        <p class="lead">Decor can float, sway, pulse, tremble and circle, take on a color, and grow or shrink. Launch pads fling tanks across the arena, and triggers can shake players' views and play sounds. The animations, colors and sounds on this page use the game's own formulas.</p>
+        <div class="links">
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md#effects">Effects in the workshop guide</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/effects-tutorial.md">Build the effects room</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/modding.md#effects">Effects in scripts and packs</a>
+        </div>
+      </div>
+
+      <section id="effects-tutorial" aria-labelledby="effects-tutorial-title">
+        <div class="motions-head">
+          <span class="label accent">Build it step by step</span>
+          <h4 id="effects-tutorial-title">A small room that reacts to you</h4>
+          <p class="lead">Start with a Lantern light and a small Tile body, both in group 1. Add an Arrow in group 2 and a separate Neon in group 3. These examples use the editor's settings; replay each one to see how it starts.</p>
+          <div class="links">
+            <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/effects-tutorial.md">Full Animate and effects tutorial</a>
+            <a class="btn small" href="https://github.com/RobertFlexx/tankyard/tree/main/mods/effects_lab">Open the finished Effects Lab pack</a>
+          </div>
+        </div>
+        <div class="fx-tutorial-grid">
+          <article class="panel motions-card">
+            <span class="label accent">1 · Ease into an animation</span><h4>Float the lantern</h4>
+            <canvas data-fx-tutorial="float" aria-hidden="true"></canvas>
+            <p>Place Float from Effects. Target group 1; Bob, size 14, 0.6 times a second, Over 1 s, Sine / In and out. Press P. The tile makes the motion visible inside the light.</p>
+            <div class="fx-demo-controls"><button class="btn small" type="button" data-fx-replay aria-label="Replay the floating lantern">Replay</button><button class="btn small" type="button" data-fx-pause aria-pressed="false" aria-label="Pause the floating lantern">Pause</button></div>
+          </article>
+          <article class="panel motions-card">
+            <span class="label accent">2 · Combine channels</span><h4>Float and sway together</h4>
+            <canvas data-fx-tutorial="combine" aria-hidden="true"></canvas>
+            <p>Add Sway for group 1: size 12°, 0.5 times a second, Over 1 s. Bob and Sway play together. Size 0 settles one style; another style keeps playing.</p>
+            <div class="fx-demo-controls"><button class="btn small" type="button" data-fx-replay aria-label="Replay combined Bob and Sway">Replay</button><button class="btn small" type="button" data-fx-pause aria-pressed="false" aria-label="Pause combined Bob and Sway">Pause</button></div>
+          </article>
+          <article class="panel motions-card">
+            <span class="label accent">3 · Chain an arrival</span><h4>Grow, then chime and flash</h4>
+            <canvas data-fx-tutorial="arrival" aria-hidden="true"></canvas>
+            <p>Grow group 2 on entry: 140%, Over 0.4 s, Back / Ease out, back after 2 s. Chime watches On arrive 2. Flash also watches 2, but targets Neon group 3. The return is another arrival. This preview is silent; try the sounds below.</p>
+            <div class="fx-demo-controls"><button class="btn small" type="button" data-fx-replay aria-label="Replay the arrival chain">Replay</button><button class="btn small" type="button" data-fx-pause aria-pressed="false" aria-label="Pause the arrival chain">Pause</button></div>
+          </article>
+          <article class="panel motions-card">
+            <span class="label accent">4 · Hold the current pose</span><h4>Stop the whole group</h4>
+            <canvas data-fx-tutorial="stop" aria-hidden="true"></canvas>
+            <p>A Sender on channel 1 activates Stop, listening on channel 1 and targeting group 1. Bob and Sway freeze where they are. Stop cancels trips back and emits no arrival. Replay restarts this example.</p>
+            <div class="fx-demo-controls"><button class="btn small" type="button" data-fx-replay aria-label="Replay the stop example">Replay</button><button class="btn small" type="button" data-fx-pause aria-pressed="false" aria-label="Pause the stop example">Pause</button></div>
+          </article>
+        </div>
+        <p class="note">Finish the room with a Launch pad on clear floor and a small Quake over the Grow area. Test with P and F5, run Check, then save and export. Reduced motion holds animations still and disables shake; colors and sizes remain. The lab and palette below let you try the other styles and presets.</p>
+      </section>
+
+      <div class="panel fx-lab" id="fx-lab">
+        <div class="ease-head">
+          <div>
+            <span class="label accent">Effects lab</span>
+            <h4>One group, five animations, any color</h4>
+          </div>
+          <button class="btn small" type="button" id="fx-hold" aria-pressed="false">Stop</button>
+        </div>
+        <canvas class="fx-view" id="fx-view" aria-hidden="true"></canvas>
+        <div class="ease-controls">
+          <div class="fx-row">
+            <div class="fx-chips" role="group" aria-label="Animation">
+              <button class="btn small" type="button" data-fx-style="Bob" aria-pressed="false">Bob</button>
+              <button class="btn small" type="button" data-fx-style="Sway" aria-pressed="false">Sway</button>
+              <button class="btn small" type="button" data-fx-style="Throb" aria-pressed="false">Throb</button>
+              <button class="btn small" type="button" data-fx-style="Shake" aria-pressed="false">Shake</button>
+              <button class="btn small" type="button" data-fx-style="Orbit" aria-pressed="false">Orbit</button>
+            </div>
+            <div class="slider"><header><label for="fx-size">Size</label><span id="fx-size-v">40</span></header><input class="range" type="range" id="fx-size" min="0" max="80" step="1" value="40"></div>
+            <div class="slider"><header><label for="fx-speed">Times a second</label><span id="fx-speed-v">0.5</span></header><input class="range" type="range" id="fx-speed" min="0.05" max="12" step="0.05" value="0.5"></div>
+            <div class="fx-chips" role="group" aria-label="Tint">
+              <button class="btn small fx-swatch" type="button" data-fx-tint="None" aria-pressed="false"><i style="background:transparent"></i>None</button>
+              <button class="btn small fx-swatch" type="button" data-fx-tint="Red" aria-pressed="false"><i style="background:#ff4030"></i>Red</button>
+              <button class="btn small fx-swatch" type="button" data-fx-tint="Cyan" aria-pressed="false"><i style="background:#60e0ff"></i>Cyan</button>
+              <button class="btn small fx-swatch" type="button" data-fx-tint="Gold" aria-pressed="false"><i style="background:#ffc840"></i>Gold</button>
+              <button class="btn small fx-swatch" type="button" data-fx-tint="Violet" aria-pressed="false"><i style="background:#bf7ff5"></i>Violet</button>
+              <button class="btn small fx-swatch" type="button" data-fx-tint="White" aria-pressed="false"><i style="background:#ffffff"></i>White</button>
+            </div>
+            <div class="slider"><header><label for="fx-strength">Tint strength</label><span id="fx-strength-v">70%</span></header><input class="range" type="range" id="fx-strength" min="0" max="100" step="5" value="70"></div>
+            <div class="slider"><header><label for="fx-scale">Size of decor</label><span id="fx-scale-v">100%</span></header><input class="range" type="range" id="fx-scale" min="25" max="250" step="5" value="100"></div>
+          </div>
+          <p class="ease-say" id="fx-say" aria-live="polite"></p>
+          <p class="note">The walls in the group stay put: effects change only how decor looks. Change the pace while it plays and the decor carries on from where it is. With reduced motion, animations hold still and colors and sizes stay.</p>
+        </div>
+      </div>
+
+      <div class="motions-sub">
+        <span class="label accent">The Effects palette</span>
+        <p class="note">Thirteen ready-made effects wait in the dock's Effects tab. Like the Motion pieces, each one acts on the group chosen in the dock, or group 1.</p>
+      </div>
+      <div class="pieces">
+        <article class="panel piece">
+          <canvas data-fx="float" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Float</h4>
+            <p>Floats group 1's decor gently up and down.</p>
+            <p class="piece-set"><b>At start</b> → <b>Animate decor</b><br><span>Bob 14</span> · <span>0.6 a second</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="sway" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Sway</h4>
+            <p>Rocks group 1's decor back and forth.</p>
+            <p class="piece-set"><b>At start</b> → <b>Animate decor</b><br><span>Sway 12°</span> · <span>0.5 a second</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="throb" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Throb</h4>
+            <p>Swells and shrinks group 1's decor like a heartbeat.</p>
+            <p class="piece-set"><b>At start</b> → <b>Animate decor</b><br><span>Throb 12%</span> · <span>1.2 a second</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="orbit" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Orbit</h4>
+            <p>Circles group 1's decor slowly around its place.</p>
+            <p class="piece-set"><b>At start</b> → <b>Animate decor</b><br><span>Orbit 40</span> · <span>0.25 a second</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="quiver" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Quiver</h4>
+            <p>Makes group 1's decor tremble for a second when a tank arrives.</p>
+            <p class="piece-set"><b>On enter</b> → <b>Animate decor</b><br><span>Shake 6</span> · <span>over 1 s</span> · <span>back after 1 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="flash" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Flash</h4>
+            <p>Flashes group 1's decor white when a tank arrives.</p>
+            <p class="piece-set"><b>On enter</b> → <b>Tint decor</b><br><span>White 90%</span> · <span>0.08 s</span> · <span>back after 0.12 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="alarm" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Alarm</h4>
+            <p>Pulses group 1's decor red every 1.2 seconds.</p>
+            <p class="piece-set"><b>Every 1.2 s</b> → <b>Tint decor</b><br><span>Red 80%</span> · <span>0.25 s</span> · <span>back after 0.35 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="dye" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Dye</h4>
+            <p>On signal 1, washes group 1's decor in cyan.</p>
+            <p class="piece-set"><b>On signal 1</b> → <b>Tint decor</b><br><span>Cyan 70%</span> · <span>1 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="grow" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Grow</h4>
+            <p>Swells group 1's decor when a tank arrives, then shrinks it back.</p>
+            <p class="piece-set"><b>On enter</b> → <b>Scale decor</b><br><span>140%</span> · <span>Back, Ease out</span> · <span>back after 2 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="stop" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Stop</h4>
+            <p>On signal 1, stops group 1 where it is, mid-orbit or mid-glide.</p>
+            <p class="piece-set"><b>On signal 1</b> → <b>Stop group</b></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="quake" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Quake</h4>
+            <p>Shakes the view of each tank that drives in.</p>
+            <p class="piece-set"><b>On enter</b> → <b>Shake screen</b><br><span>45%</span> · <span>for 0.8 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="chime" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Chime</h4>
+            <p>Plays a chime here when a tank arrives.</p>
+            <p class="piece-set"><b>On enter</b> → <b>Play sound</b><br><span>Chime</span> · <span>80%</span></p>
+            <button class="btn small fx-play" type="button" data-sound="Chime" data-volume="80">Hear it</button>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-fx="siren" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Siren</h4>
+            <p>Sounds an alarm here on signal 1.</p>
+            <p class="piece-set"><b>On signal 1</b> → <b>Play sound</b><br><span>Alarm</span> · <span>100%</span></p>
+            <button class="btn small fx-play" type="button" data-sound="Alarm" data-volume="100">Hear it</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="motions-row">
+        <div class="panel motions-card">
+          <span class="label accent">Launch pads</span>
+          <h4>A hard push in one direction</h4>
+          <p>A launch pad flings a tank along its arrows at 900 units a second, times its strength, and lets it coast for a moment before steering takes over. A tank already flying that way is left alone, so a pad launches once. Online, your own launch is predicted with the server's code, so it happens the instant you touch the pad.</p>
+          <canvas id="launch-view" aria-hidden="true"></canvas>
+        </div>
+        <div class="panel motions-card" id="fx-sounds">
+          <span class="label accent">Play sound</span>
+          <h4>Eight sounds, heard by distance</h4>
+          <p>A Play sound trigger plays at the middle of its area. Players nearby hear it at full volume and it fades out a little past the edge of the screen, at each player's Effects volume. These are the game's own sounds, made in your browser the same way.</p>
+          <canvas class="fx-wave" id="fx-wave" aria-hidden="true"></canvas>
+          <div class="chips fx-sound-list" role="group" aria-label="Sound">
+            <button class="btn" type="button" data-sound="Chime" aria-pressed="false">Chime</button>
+            <button class="btn" type="button" data-sound="Bell" aria-pressed="false">Bell</button>
+            <button class="btn" type="button" data-sound="Alarm" aria-pressed="false">Alarm</button>
+            <button class="btn" type="button" data-sound="Switch" aria-pressed="false">Switch</button>
+            <button class="btn" type="button" data-sound="Whoosh" aria-pressed="false">Whoosh</button>
+            <button class="btn" type="button" data-sound="Rumble" aria-pressed="false">Rumble</button>
+            <button class="btn" type="button" data-sound="Fanfare" aria-pressed="false">Fanfare</button>
+            <button class="btn" type="button" data-sound="Thump" aria-pressed="false">Thump</button>
+          </div>
+          <div class="glow-controls">
+            <div class="slider"><header><label for="fx-volume">Trigger volume</label><span id="fx-volume-v">80%</span></header><input class="range" type="range" id="fx-volume" min="1" max="100" step="1" value="80"></div>
+            <div class="slider"><header><label for="fx-distance">Your distance</label><span id="fx-distance-v">0 units</span></header><input class="range" type="range" id="fx-distance" min="0" max="2400" step="50" value="0"></div>
+            <span class="glow-opt" id="fx-heard">Heard at 80%</span>
+          </div>
+        </div>
+      </div>
     </section>
   </section>
 

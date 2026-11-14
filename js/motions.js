@@ -45,7 +45,7 @@ const scenes = [];
 let frame = 0;
 
 function scene(canvas, paint) {
-  const s = { canvas, ctx: canvas.getContext("2d"), paint, w: 0, h: 0, ratio: 1, visible: false, dirty: true, clock: 0, last: 0 };
+  const s = { canvas, ctx: canvas.getContext("2d"), paint, w: 0, h: 0, ratio: 1, visible: false, dirty: true, paused: false, clock: 0, last: 0 };
   const fit = () => {
     const box = canvas.getBoundingClientRect();
     if (!box.width || !box.height) return;
@@ -87,7 +87,7 @@ function tick(now) {
   let again = false;
   for (const s of scenes) {
     if (!s.visible || !s.w) continue;
-    if (moving) {
+    if (moving && !s.paused) {
       s.clock += s.last ? Math.min(0.1, (now - s.last) / 1000) : 0;
       s.last = now;
       again = true;
@@ -1122,6 +1122,12 @@ function initGlow() {
     emit(ctx, EFFECTS[state.effect], EMITTERS[state.effect], 0.6, t, 9);
   });
 }
+
+// The effects section (effects.js) draws with the same pieces.
+export {
+  scene, refresh, stage, floor, block, badge, area, signal, timer, text, circle, tank, light, arrowDecor,
+  rgba, mix, palette, LOGIC, SIGNAL, NEON, LANTERN, TORCH, ARROW, PANEL, LAMP_ALPHA,
+};
 
 export function initMotions(tanks) {
   const root = $("#motions");

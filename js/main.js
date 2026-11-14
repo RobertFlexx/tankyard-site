@@ -7,6 +7,7 @@ import { initInstall } from "./install.js";
 import { initWorkshop } from "./workshop.js";
 import { initTree } from "./tree.js";
 import { initMotions } from "./motions.js";
+import { initEffects } from "./effects.js";
 import { initBosses, initModes, initPractice, initControls, initServer, initMods } from "./sections.js";
 
 function boot(name, start) {
@@ -106,6 +107,7 @@ if (tanks) {
 }
 // Draws its tanks as plain circles if the models failed to load.
 boot("motions", () => initMotions(tanks));
+boot("effects", () => initEffects());
 
 const [game, bosses, maps] = await Promise.all(
   ["data/game.json", "data/bosses.json", "data/maps.json"].map((url) =>

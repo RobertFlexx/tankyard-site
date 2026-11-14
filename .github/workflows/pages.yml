@@ -31,6 +31,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Check workshop examples
+        run: |
+          node tools/test_motions.mjs
+          node tools/test_effects.mjs
+          node tools/test_workshop.mjs
+
       - name: Fetch the latest Tank Yard release
         id: release
         env:
