@@ -3335,7 +3335,8 @@ h3 {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  #celebrate {
+  #celebrate,
+  #ease-replay {
     display: none;
   }
 }
@@ -3702,3 +3703,368 @@ h3 {
 .ws-tour-picker .btn[aria-pressed="true"] { background: var(--accent, #00b2e1); color: #fff; }
 .ws-tour-picker a { font-size: 11px; padding: 4px; }
 .ws-tour-note { margin: 4px 12px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+
+/* New in 1.0: motions, lights and particles (js/motions.js) */
+.motions {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.motions h4 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.25;
+}
+.motions-head .label {
+  margin-bottom: 8px;
+}
+.motions-head h3 {
+  font-size: 22px;
+}
+.motions-head .lead {
+  margin-bottom: 12px;
+}
+.motions .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.motions-sub {
+  display: grid;
+  gap: 6px;
+  margin: 28px 0 10px;
+}
+.motions-sub .note {
+  max-width: 760px;
+  margin: 0;
+}
+.motions .slider header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+.motions .slider header span {
+  color: var(--muted);
+}
+.motions kbd.keycap {
+  font-family: inherit;
+}
+
+.ease-lab {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr);
+  grid-template-areas:
+    "head head"
+    "graph yard"
+    "controls controls";
+  margin-top: 22px;
+}
+.ease-head {
+  grid-area: head;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.ease-head .label {
+  margin-bottom: 6px;
+}
+.ease-graph,
+.ease-yard {
+  display: block;
+  width: 100%;
+  height: 280px;
+}
+.ease-graph {
+  grid-area: graph;
+  border-right: 1px solid var(--line);
+}
+.ease-yard {
+  grid-area: yard;
+}
+.ease-controls {
+  grid-area: controls;
+  display: grid;
+  gap: 14px;
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--line);
+}
+.ease-curves {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 6px;
+}
+.btn.ease-curve {
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  min-height: 58px;
+  padding: 4px 2px 6px;
+  font-size: 12px;
+}
+.ease-curve svg {
+  width: 100%;
+  max-width: 52px;
+  height: 30px;
+  overflow: visible;
+}
+.ease-curve polyline {
+  fill: none;
+  stroke: var(--warm);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.ease-curve .spark-guide {
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+.ease-row {
+  display: grid;
+  grid-template-columns: auto minmax(150px, 1fr) minmax(150px, 1fr);
+  align-items: end;
+  gap: 12px 24px;
+}
+.ease-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.ease-say {
+  min-height: 2.9em;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.ease-say b {
+  color: var(--text);
+}
+
+/* Rows of five, four, three or two; a short last row sits in the middle. */
+.pieces {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.piece {
+  display: flex;
+  flex: 0 0 calc((100% - 32px) / 5);
+  flex-direction: column;
+  min-width: 0;
+}
+.piece canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 11 / 7;
+  border-bottom: 1px solid var(--line);
+}
+.piece-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px 12px;
+}
+.piece-text p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.piece-text .piece-set {
+  margin-top: auto;
+  padding-top: 6px;
+  font-size: 11px;
+}
+.piece-set b {
+  color: var(--warm);
+}
+.piece-set b,
+.piece-set span {
+  white-space: nowrap;
+}
+
+.motions-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 28px;
+}
+.motions-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px 16px 16px;
+}
+.motions-card > p {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.motions-card canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  border: 1px solid var(--line);
+}
+.chain-steps {
+  display: grid;
+  gap: 4px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.chain-steps li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 5px 8px;
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid transparent;
+  transition:
+    background-color 0.18s cubic-bezier(0.2, 0.7, 0.3, 1),
+    border-color 0.18s cubic-bezier(0.2, 0.7, 0.3, 1),
+    color 0.18s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.chain-steps b {
+  flex: none;
+  min-width: 96px;
+  color: var(--warm);
+}
+.chain-steps li.on {
+  color: var(--text);
+  background: var(--hover);
+  border-color: var(--accent);
+}
+.motions-card .chips {
+  margin: 4px 0 0;
+}
+.glow-presets {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.glow-presets .btn {
+  padding: 0 4px;
+}
+.glow-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px 24px;
+}
+.glow-controls .slider {
+  flex: 1 1 200px;
+}
+.glow-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 22px;
+  font-size: 13px;
+}
+
+.motions-tips {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.motions-tips li {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 12px 14px 14px;
+}
+.motions-tips .keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.motions-tips p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.motions-tips p b {
+  color: var(--text);
+}
+.milestone-card .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (max-width: 1100px) {
+  .ease-curves {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .piece {
+    flex-basis: calc((100% - 24px) / 4);
+  }
+  .motions-tips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 860px) {
+  .ease-lab {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "head"
+      "graph"
+      "yard"
+      "controls";
+  }
+  .ease-graph {
+    height: 230px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .ease-yard {
+    height: 250px;
+  }
+  .ease-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ease-modes {
+    grid-column: 1 / -1;
+  }
+  .piece {
+    flex-basis: calc((100% - 16px) / 3);
+  }
+  .motions-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .piece {
+    flex-basis: calc((100% - 8px) / 2);
+  }
+  .piece-text {
+    padding: 8px 10px 10px;
+  }
+  .motions-tips {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .ease-curves {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ease-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ease-modes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .chain-steps b {
+    min-width: 84px;
+  }
+}

@@ -270,7 +270,7 @@ cargo build --locked --release --workspace
       </div>
       <div class="panel">
         <span class="label accent">Logic</span>
-        <p>Plates, timers, counters, gates and levers change groups of objects. P runs the logic in place; Shift+F5 playtests from the pointer.</p>
+        <p>Plates, timers, counters, gates and levers change groups of objects, and <a href="#motions">motions</a> glide, turn and fade them. P runs the logic in place; Shift+F5 playtests from the pointer.</p>
       </div>
       <div class="panel">
         <span class="label accent">Share</span>
@@ -281,6 +281,185 @@ cargo build --locked --release --workspace
         </div>
       </div>
     </div>
+    <section class="motions" id="motions" aria-labelledby="motions-title">
+      <div class="motions-head">
+        <span class="label accent">New in 1.0</span>
+        <h3 id="motions-title">Motions, lights and particles</h3>
+        <p class="lead">Blocks, pads and decor can now glide, turn and fade along eleven easing curves, one motion can set off the next, and arenas can glow with flickering lights and particle effects. The curves, lights and particles on this page use the game's own math.</p>
+        <div class="links">
+          <a class="btn small primary" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/motions-tutorial.md">Motions tutorial</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md#motions">Motions in the workshop guide</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/modding.md#motions">Motions in scripts and packs</a>
+        </div>
+      </div>
+
+      <div class="panel ease-lab" id="ease-lab">
+        <div class="ease-head">
+          <div>
+            <span class="label accent">Easing explorer</span>
+            <h4>How a motion feels</h4>
+          </div>
+          <button class="btn small" type="button" id="ease-replay">Replay</button>
+        </div>
+        <canvas class="ease-graph" id="ease-graph" aria-hidden="true"></canvas>
+        <canvas class="ease-yard" id="ease-yard" aria-hidden="true"></canvas>
+        <div class="ease-controls">
+          <div class="ease-curves" id="ease-curves" role="group" aria-label="Curve"></div>
+          <div class="ease-row">
+            <div class="ease-modes" id="ease-modes" role="group" aria-label="Mode"></div>
+            <div class="slider"><header><label for="ease-over">Over</label><span id="ease-over-v">1.2 s</span></header><input class="range" type="range" id="ease-over" min="0.2" max="3" step="0.1" value="1.2"></div>
+            <div class="slider"><header><label for="ease-back">Go back after</label><span id="ease-back-v">1 s</span></header><input class="range" type="range" id="ease-back" min="0" max="3" step="0.5" value="1"></div>
+          </div>
+          <p class="ease-say" id="ease-say" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="motions-sub">
+        <span class="label accent">The Motion palette</span>
+        <p class="note">Ten ready-made motions wait in the dock's Motion tab. Choose a group in the dock first, and the piece you place moves that group. Each one below plays with the settings it comes with.</p>
+      </div>
+      <div class="pieces">
+        <article class="panel piece">
+          <canvas data-piece="door" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Door</h4>
+            <p>Slides group 1 up when a tank arrives, and back 4 s later.</p>
+            <p class="piece-set"><b>On enter</b> → <b>Move group to</b><br><span>Cubic, Ease out</span> · <span>0.5 s</span> · <span>back after 4 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-piece="shuttle" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Shuttle</h4>
+            <p>Glides group 1 across and back every 6 seconds.</p>
+            <p class="piece-set"><b>Every 6 s</b> → <b>Move group</b><br><span>Sine, In and out</span> · <span>2 s</span> · <span>back after 1 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-piece="piston" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Piston</h4>
+            <p>Punches group 1 out and pulls it back every 2 seconds.</p>
+            <p class="piece-set"><b>Every 2 s</b> → <b>Move group</b><br><span>Expo, Ease out</span> · <span>0.2 s</span> · <span>back after 0.4 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-piece="lift" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Lift</h4>
+            <p>On signal 1, carries group 1 to 12% below its place.</p>
+            <p class="piece-set"><b>On signal 1</b> → <b>Move group to</b><br><span>Quad, In and out</span> · <span>1.5 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-piece="home" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Home</h4>
+            <p>On signal 2, brings group 1 back to where the map puts it, from wherever it is.</p>
+            <p class="piece-set"><b>On signal 2</b> → <b>Move group to</b><br><span>Quad, In and out</span> · <span>1.5 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-piece="drop" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Drop</h4>
+            <p>Drops group 1 down with a bounce as the round starts.</p>
+            <p class="piece-set"><b>At start</b> → <b>Move group</b><br><span>Bounce, Ease out</span> · <span>1.2 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-piece="spinner" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Spinner</h4>
+            <p>Turns group 1's decor a quarter turn every 3 seconds.</p>
+            <p class="piece-set"><b>Every 3 s</b> → <b>Turn decor</b><br><span>Back, Ease out</span> · <span>0.8 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-piece="fader" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Fader</h4>
+            <p>Fades group 1's decor while tanks pass, and brings it back after 5 s.</p>
+            <p class="piece-set"><b>On enter</b> → <b>Fade decor</b><br><span>Sine, In and out</span> · <span>0.6 s</span> · <span>back after 5 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-piece="blink" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Blink</h4>
+            <p>Dims group 1's decor and brings it back every 2 seconds.</p>
+            <p class="piece-set"><b>Every 2 s</b> → <b>Fade decor</b><br><span>Sine, In and out</span> · <span>0.3 s</span> · <span>back after 0.7 s</span></p>
+          </div>
+        </article>
+        <article class="panel piece">
+          <canvas data-piece="then" aria-hidden="true"></canvas>
+          <div class="piece-text">
+            <h4>Then</h4>
+            <p>Sends signal 1 each time group 1 finishes a motion, out or back.</p>
+            <p class="piece-set"><b>On arrive</b> → <b>Send signal</b><br><span>Watches group 1</span></p>
+          </div>
+        </article>
+      </div>
+
+      <div class="motions-row">
+        <div class="panel motions-card">
+          <span class="label accent">On arrive</span>
+          <h4>One motion sets off the next</h4>
+          <p>On arrive acts the moment a group's motion ends. Here each Drop waits for the barricade before it to land, and a Then announces when the last one is down.</p>
+          <canvas id="chain-view" aria-hidden="true"></canvas>
+          <ol class="chain-steps" id="chain-steps">
+            <li><b>At start</b> Drop moves group 3</li>
+            <li><b>On arrive 3</b> Drop moves group 4</li>
+            <li><b>On arrive 4</b> Drop moves group 5</li>
+            <li><b>On arrive 5</b> Then announces “The gates are set!”</li>
+          </ol>
+        </div>
+        <div class="panel motions-card" id="glow">
+          <span class="label accent">Lights and particles</span>
+          <h4>Torches, lanterns, neons and effects</h4>
+          <p>Torches waver like flames, lanterns spread a wide, soft light and neons glow steady. Lights add to whatever lies beneath them, so they shine brightest on a dark floor. Each particle preset fills in every setting at once.</p>
+          <canvas id="glow-view" aria-hidden="true"></canvas>
+          <div class="chips glow-presets" role="group" aria-label="Particle preset">
+            <button class="btn" type="button" data-effect="Embers">Embers</button>
+            <button class="btn" type="button" data-effect="Rain">Rain</button>
+            <button class="btn" type="button" data-effect="Dust">Dust</button>
+            <button class="btn" type="button" data-effect="Sparks">Sparks</button>
+            <button class="btn" type="button" data-effect="Fireflies">Fireflies</button>
+            <button class="btn" type="button" data-effect="Smoke">Smoke</button>
+            <button class="btn" type="button" data-effect="Snow">Snow</button>
+            <button class="btn" type="button" data-effect="Glitter">Glitter</button>
+            <button class="btn" type="button" data-effect="Fountain">Fountain</button>
+            <button class="btn" type="button" data-effect="Pulse">Pulse</button>
+          </div>
+          <div class="glow-controls">
+            <div class="slider"><header><label for="glow-flicker">Torch flicker</label><span id="glow-flicker-v">0.55</span></header><input class="range" type="range" id="glow-flicker" min="0" max="1" step="0.05" value="0.55"></div>
+            <span class="glow-opt">Dark floor <button class="toggle" type="button" role="switch" aria-checked="true" id="glow-dark" aria-label="Dark floor"></button></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="motions-sub">
+        <span class="label accent">Also new in the workshop</span>
+      </div>
+      <ul class="motions-tips">
+        <li class="panel">
+          <span class="keys"><kbd class="keycap">Shift</kbd></span>
+          <p><b>Straight motions.</b> Drag the diamond at a selected motion's arrow to set where it goes. It snaps to the grid, and Shift keeps it straight.</p>
+        </li>
+        <li class="panel">
+          <span class="keys"><kbd class="keycap">Ctrl</kbd><kbd class="keycap">Shift</kbd><kbd class="keycap">A</kbd></span>
+          <p><b>Select alike.</b> Selects everything like the selection, such as every light or every speed pad, so one change reaches them all.</p>
+        </li>
+        <li class="panel">
+          <span class="keys"><kbd class="keycap">P</kbd></span>
+          <p><b>Preview in place.</b> Runs the map's logic on the canvas. Moved objects show a dashed outline where the map puts them, and Fire plays any one trigger.</p>
+        </li>
+        <li class="panel">
+          <span class="keys"><span class="keycap">Remembered</span></span>
+          <p><b>Back where you were.</b> The workshop remembers the palette tab and item, the inspector tab, the preview's speed and where you were looking.</p>
+        </li>
+      </ul>
+    </section>
   </section>
 
   <section class="page wrap" id="tanks" aria-labelledby="tanks-title">
@@ -437,7 +616,10 @@ cargo build --locked --release --workspace
         <div class="panel milestone-card" id="milestone-card" hidden>
           <span class="label accent">Tank Yard 1.0</span>
           <p><strong>Tank Yard leaves its 0.x releases behind.</strong> Thank you to everyone who played, hosted a server, built a map, wrote a mod or reported a bug along the way.</p>
-          <button class="btn small" type="button" id="celebrate">Celebrate again</button>
+          <div class="links">
+            <a class="btn small" href="#motions">New in the workshop</a>
+            <button class="btn small" type="button" id="celebrate">Celebrate again</button>
+          </div>
         </div>
         <article class="panel notes" id="notes"><p class="muted">Loading the release notes…</p></article>
         <div class="earlier" id="earlier" hidden><span class="label accent">Earlier releases</span></div>
