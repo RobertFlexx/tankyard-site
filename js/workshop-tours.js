@@ -47,6 +47,8 @@ const WORKSHOP_CAPTIONS = [
 export const TOURS = {
   workshop: { title: "Getting started", label: "Arena Workshop tour", duration: 157.23,
     poster: "media/tutorial-poster.jpg", file: "arena-workshop-tutorial",
+    guide: "map-editor",
+    note: "The full editor tour. Choose Logic gates for the vault circuit or Motions for the gatehouse.",
     chapters: WORKSHOP_CHAPTERS, captions: WORKSHOP_CAPTIONS },
   logic: {
   "title": "Logic gates",
@@ -54,6 +56,9 @@ export const TOURS = {
   "duration": 101.63,
   "poster": "media/logic-gates-poster.jpg",
   "file": "logic-gates-tutorial",
+  "guide": "logic-gates-tutorial",
+  "track": "media/logic-gates-tutorial.vtt",
+  "note": "Gates from 0.16. This browser demo connects levers directly to gates; the game supports full signal wiring.",
   "chapters": [
     {
       "t": 0.0,
@@ -163,6 +168,159 @@ export const TOURS = {
     [
       97.59,
       "The written tutorial builds the whole vault, step by step."
+    ]
+  ]
+},
+  motions: {
+  "title": "Motions",
+  "label": "Motions tutorial \u00b7 doors, curves, lights and particles",
+  "poster": "media/motions-poster.jpg",
+  "file": "motions-tutorial",
+  "guide": "motions-tutorial",
+  "track": "media/motions-tutorial.vtt",
+  "note": "A gatehouse in the game: sliding doors, curves, chains, lights and particles. Try the interactive motions guide below.",
+  "duration": 134.67,
+  "chapters": [
+    {
+      "t": 0.0,
+      "title": "The door",
+      "tab": "Object",
+      "mode": "build"
+    },
+    {
+      "t": 31.91,
+      "title": "Curves",
+      "tab": "Object",
+      "mode": "edit"
+    },
+    {
+      "t": 51.4,
+      "title": "Try it",
+      "tab": "Object"
+    },
+    {
+      "t": 65.05,
+      "title": "Chains",
+      "tab": "Object"
+    },
+    {
+      "t": 81.74,
+      "title": "Lights",
+      "tab": "Object",
+      "cat": "Decor"
+    },
+    {
+      "t": 101.16,
+      "title": "Particles",
+      "tab": "Object",
+      "cat": "Decor"
+    },
+    {
+      "t": 117.77,
+      "title": "Play",
+      "tab": "Check"
+    }
+  ],
+  "captions": [
+    [
+      0.0,
+      "A wall with a gap. The blocks in the gap are group 1: the door."
+    ],
+    [
+      5.24,
+      "Motion holds ready-made motions. Hover a tile to see what it does."
+    ],
+    [
+      15.04,
+      "Choose group 1 in the dock, then drag out a Door over the gap."
+    ],
+    [
+      21.71,
+      "In Edit, the Door shows its motion: group 1 moves 6% up over half a second."
+    ],
+    [
+      27.2,
+      "The ghost shows where the door goes. Drag the diamond to move it."
+    ],
+    [
+      31.91,
+      "Over sets how long it takes. The curve and mode set how it feels."
+    ],
+    [
+      38.23,
+      "Bounce bounces against the end."
+    ],
+    [
+      41.7,
+      "Back overshoots a little, and Elastic springs past the end."
+    ],
+    [
+      47.86,
+      "Cubic with Ease out starts fast and settles gently."
+    ],
+    [
+      51.4,
+      "P runs the logic in place. Hold T for a test tank at the pointer."
+    ],
+    [
+      55.15,
+      "Drive it into the Door's area, and the door slides up out of the way."
+    ],
+    [
+      58.86,
+      "Four seconds after the last tank arrives, the door slides shut."
+    ],
+    [
+      61.54,
+      "The neon beside the door blinks each time the door comes to rest."
+    ],
+    [
+      65.05,
+      "On arrive starts a motion when another ends. Shift+P runs the preview again."
+    ],
+    [
+      71.25,
+      "Each Drop waits for the barricade before it, and a Then announces the last."
+    ],
+    [
+      76.52,
+      "A Shuttle glides group 2 across every 6 seconds: cover that moves."
+    ],
+    [
+      81.74,
+      "F9 switches to the dark theme, where lights glow brightest."
+    ],
+    [
+      86.11,
+      "Torches waver like flames, and a lantern spreads a wide, soft light."
+    ],
+    [
+      91.2,
+      "Select a light to set its Flicker, from steady to a failing lamp."
+    ],
+    [
+      97.68,
+      "Ctrl+Shift+A selects every light, so one change reaches them all."
+    ],
+    [
+      101.16,
+      "Particle presets fill in every setting at once."
+    ],
+    [
+      113.42,
+      "Shape, Emit from, Speed and Gravity fine-tune them."
+    ],
+    [
+      117.77,
+      "Check finds nothing to fix. Shift+F5 playtests from the pointer."
+    ],
+    [
+      124.62,
+      "The door opens for real tanks too, and shuts behind them."
+    ],
+    [
+      130.65,
+      "The written tutorial builds the whole gatehouse, step by step."
     ]
   ]
 }

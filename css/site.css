@@ -3697,7 +3697,7 @@ h3 {
   }
 }
 
-/* Keep the two workshop tours easy to switch on a narrow inspector. */
+/* Keep the workshop tours easy to switch on a narrow inspector. */
 .ws-tour-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; padding: 10px 8px 2px; }
 .ws-tour-picker .btn { flex: 1 1 100px; font-size: 12px; padding: 4px 8px; }
 .ws-tour-picker .btn[aria-pressed="true"] { background: var(--accent, #00b2e1); color: #fff; }

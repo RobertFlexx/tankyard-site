@@ -1463,18 +1463,22 @@ export function initWorkshop(models) {
     video.replaceChildren(
       h("source", { src: `media/${tour.file}.webm`, type: 'video/webm; codecs="vp9"' }),
       h("source", { src: `media/${tour.file}.mp4`, type: "video/mp4" }),
-      ...(id === "logic" ? [h("track", { kind: "captions", src: "media/logic-gates-tutorial.vtt", srclang: "en", label: "English" })] : []),
+      ...(tour.track ? [h("track", { kind: "captions", src: tour.track, srclang: "en", label: "English" })] : []),
     );
-    $("#ws-written").href = `https://github.com/RobertFlexx/tankyard/blob/main/docs/${id === "logic" ? "logic-gates-tutorial" : "map-editor"}.md`;
+    $("#ws-written").href = `https://github.com/RobertFlexx/tankyard/blob/main/docs/${tour.guide}.md`;
     video.preload = "metadata";
     video.load();
     renderTour();
     $$("[data-tour]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.tour === id)));
-    $("#ws-tour-note").textContent = id === "logic" ? "New in 0.16. In the demo, levers connect directly to gates. The game supports full signal wiring." : "The original workshop tour. Choose Logic gates for the new vault circuit.";
+    $("#ws-tour-note").textContent = tour.note;
     syncVideo();
     syncButtons();
   }
   $$("[data-tour]").forEach((button) => button.addEventListener("click", () => setTour(button.dataset.tour)));
+  $$("[data-watch-tour]").forEach((link) => link.addEventListener("click", () => setTour(link.dataset.watchTour)));
+  addEventListener("hashchange", () => {
+    if (location.hash === "#motions-video") setTour("motions");
+  });
   renderTour();
 
   let userPaused = false;
@@ -1672,6 +1676,7 @@ export function initWorkshop(models) {
   renderTiles();
   setMode("build");
   refreshTop();
+  if (location.hash === "#motions-video") setTour("motions");
   syncVideo();
   syncButtons();
 }

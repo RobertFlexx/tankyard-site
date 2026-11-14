@@ -208,9 +208,10 @@ cargo build --locked --release --workspace
         <div class="ws-tour-picker" role="group" aria-label="Choose a tutorial">
           <button class="btn small" type="button" data-tour="workshop" aria-pressed="true">Getting started</button>
           <button class="btn small" type="button" data-tour="logic" aria-pressed="false">Logic gates</button>
+          <button class="btn small" type="button" id="motions-video" data-tour="motions" aria-pressed="false">Motions</button>
           <a id="ws-written" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md">Written guide</a>
         </div>
-        <p class="ws-tour-note" id="ws-tour-note">The original workshop tour. Choose Logic gates for the new vault circuit.</p>
+        <p class="ws-tour-note" id="ws-tour-note">The full editor tour. Choose Logic gates for the vault circuit or Motions for the gatehouse.</p>
         <div class="ws-tabs" id="ws-tabs"></div>
         <div class="ws-player" id="ws-player">
           <video id="ws-video" playsinline muted preload="none" poster="media/tutorial-poster.jpg" aria-label="Arena Workshop tutorial, 2 minutes 37 seconds">
@@ -263,6 +264,7 @@ cargo build --locked --release --workspace
         </div>
       </div>
     </div>
+    <p class="ws-tour-note"><a href="https://github.com/RobertFlexx/tankyard/blob/main/docs/bacteria.md">Bacteria in 1.0.1</a> escapes into a private maze for ten seconds to repair and reposition.</p>
     <div class="ws-under">
       <div class="panel">
         <span class="label accent">Build</span>
@@ -287,7 +289,8 @@ cargo build --locked --release --workspace
         <h3 id="motions-title">Motions, lights and particles</h3>
         <p class="lead">Blocks, pads and decor can now glide, turn and fade along eleven easing curves, one motion can set off the next, and arenas can glow with flickering lights and particle effects. The curves, lights and particles on this page use the game's own math.</p>
         <div class="links">
-          <a class="btn small primary" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/motions-tutorial.md">Motions tutorial</a>
+          <a class="btn small primary" href="#motions-video" data-watch-tour="motions">Watch the motions video</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/motions-tutorial.md">Written tutorial</a>
           <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md#motions">Motions in the workshop guide</a>
           <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/modding.md#motions">Motions in scripts and packs</a>
         </div>
