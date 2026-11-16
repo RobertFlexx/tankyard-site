@@ -48,7 +48,7 @@ export const TOURS = {
   workshop: { title: "Getting started", label: "Arena Workshop tour", duration: 157.23,
     poster: "media/tutorial-poster.jpg", file: "arena-workshop-tutorial",
     guide: "map-editor",
-    note: "The full editor tour. Choose Logic gates for the vault circuit or Motions for the gatehouse.",
+    note: "The full editor tour. Choose Logic gates for the vault circuit, Motions for the gatehouse or Physics for push doors and light.",
     chapters: WORKSHOP_CHAPTERS, captions: WORKSHOP_CAPTIONS },
   logic: {
   "title": "Logic gates",
@@ -321,6 +321,136 @@ export const TOURS = {
     [
       130.65,
       "The written tutorial builds the whole gatehouse, step by step."
+    ]
+  ]
+},
+  physics: {
+  "title": "Physics",
+  "label": "Physics and lighting tutorial \u00b7 coming in 1.3",
+  "poster": "media/physics-poster.jpg",
+  "file": "physics-tutorial",
+  "guide": "physics-tutorial",
+  "track": "media/physics-tutorial.vtt",
+  "note": "Coming in 1.3: push doors, a crate puzzle, paths and darkness in the game, then the new Foundry arena. The browser demo doesn't push bodies yet.",
+  "duration": 113.15,
+  "chapters": [
+    {
+      "t": 0.0,
+      "title": "Darkness",
+      "tab": "Map"
+    },
+    {
+      "t": 9.59,
+      "title": "Paths",
+      "tab": "Map"
+    },
+    {
+      "t": 19.13,
+      "title": "Groups",
+      "tab": "Map"
+    },
+    {
+      "t": 25.73,
+      "title": "Bodies",
+      "tab": "Object"
+    },
+    {
+      "t": 33.44,
+      "title": "Physics pieces"
+    },
+    {
+      "t": 47.35,
+      "title": "Preview"
+    },
+    {
+      "t": 52.94,
+      "title": "Push door"
+    },
+    {
+      "t": 63.15,
+      "title": "Crate"
+    },
+    {
+      "t": 75.94,
+      "title": "Lights"
+    },
+    {
+      "t": 88.61,
+      "title": "Foundry"
+    }
+  ],
+  "captions": [
+    [
+      0.0,
+      "Night Works, the example pack, open in the Arena Workshop."
+    ],
+    [
+      3.7,
+      "In the Map tab, Darkness sets how dark a round starts and the color tints it."
+    ],
+    [
+      9.59,
+      "Paths move a group through points, each with its own timing, wait and curve."
+    ],
+    [
+      14.82,
+      "The canvas draws the ferry's path from where it rests, with a dot riding it."
+    ],
+    [
+      19.13,
+      "The group list shows what each group holds. Hidden, Lock and Select act on all of it."
+    ],
+    [
+      25.73,
+      "Pushable turns a group into one solid body that tanks shove by driving into it."
+    ],
+    [
+      29.65,
+      "Choose which way it slides and how far, its weight, a spring home, friction and bounce."
+    ],
+    [
+      33.44,
+      "The Physics palette holds ready-made pieces. Hover one to see what it does."
+    ],
+    [
+      43.59,
+      "Lightning flashes a dark arena every nine seconds, then Go back after returns the dark."
+    ],
+    [
+      47.44,
+      "P runs the logic in place: the ferry rides its path and the ring pulses."
+    ],
+    [
+      55.98,
+      "Shift+F5 playtests from the pointer. Drive into the push door and it gives way."
+    ],
+    [
+      58.86,
+      "Steer past it and it springs shut behind you. The roof clears while you're inside."
+    ],
+    [
+      66.21,
+      "Shove the crate onto the plate to open the vault gate."
+    ],
+    [
+      78.98,
+      "The lights plate brightens the yard for ten seconds. Every six, the middle blasts tanks outward."
+    ],
+    [
+      88.61,
+      "Foundry, a new built-in arena for every mode, built from the same pieces."
+    ],
+    [
+      91.8,
+      "A furnace, belts, cranes on paths, and press rooms behind push doors."
+    ],
+    [
+      96.25,
+      "Belts carry tanks along, and cranes ride back and forth on their paths."
+    ],
+    [
+      107.85,
+      "Every ten seconds the furnace glows red, then blows back every tank near it."
     ]
   ]
 }
