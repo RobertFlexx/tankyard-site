@@ -2,7 +2,7 @@
 // the real tutorial playing in the inspector and driving the editor's chrome.
 import { $, $$, h, clamp, clock, reducedMotion, store, onVisible, css, typing } from "./util.js";
 import { drawModel, EXPORT_AIM } from "./models.js";
-import { TOURS } from "./workshop-tours.js";
+import { TOURS, tourFromHash } from "./workshop-tours.js";
 import { LOGIC, GATES, DEMO_GATES, gateOpen, logicState, stepLogic, vaultDemo } from "./workshop-logic.js";
 
 /* ---------- The tour ---------- */
@@ -1476,9 +1476,11 @@ export function initWorkshop(models) {
   }
   $$("[data-tour]").forEach((button) => button.addEventListener("click", () => setTour(button.dataset.tour)));
   $$("[data-watch-tour]").forEach((link) => link.addEventListener("click", () => setTour(link.dataset.watchTour)));
-  addEventListener("hashchange", () => {
-    if (location.hash === "#motions-video") setTour("motions");
-  });
+  function selectLinkedTour() {
+    const id = tourFromHash(location.hash);
+    if (id) setTour(id);
+  }
+  addEventListener("hashchange", selectLinkedTour);
   renderTour();
 
   let userPaused = false;
@@ -1676,7 +1678,7 @@ export function initWorkshop(models) {
   renderTiles();
   setMode("build");
   refreshTop();
-  if (location.hash === "#motions-video") setTour("motions");
+  selectLinkedTour();
   syncVideo();
   syncButtons();
 }

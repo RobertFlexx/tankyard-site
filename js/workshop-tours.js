@@ -326,12 +326,12 @@ export const TOURS = {
 },
   physics: {
   "title": "Physics",
-  "label": "Physics and lighting tutorial \u00b7 coming in 1.3",
+  "label": "Physics and lighting tutorial",
   "poster": "media/physics-poster.jpg",
   "file": "physics-tutorial",
   "guide": "physics-tutorial",
   "track": "media/physics-tutorial.vtt",
-  "note": "Coming in 1.3: push doors, a crate puzzle, paths and darkness in the game, then the new Foundry arena. The browser demo doesn't push bodies yet.",
+  "note": "Push doors, a crate puzzle, paths and darkness in the game, then the Foundry arena. The browser demo doesn't push bodies yet.",
   "duration": 113.15,
   "chapters": [
     {
@@ -455,3 +455,10 @@ export const TOURS = {
   ]
 }
 };
+
+// Tutorial fragments select the matching video as well as scrolling to it.
+export function tourFromHash(hash) {
+  let fragment;
+  try { fragment = decodeURIComponent(hash); } catch { return null; }
+  return Object.keys(TOURS).find((id) => fragment === `#${id}-video`) ?? null;
+}

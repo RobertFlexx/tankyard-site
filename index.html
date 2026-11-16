@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tank Yard</title>
-<meta name="description" content="Tank Yard is a free, open-source tank arena for Windows, macOS, Linux and FreeBSD: 111 tanks, 14 bosses, 16 modes, an arena editor and Luau mods.">
+<meta name="description" content="Tank Yard is a free, open-source tank arena for Windows, macOS, Linux and FreeBSD: 112 tanks, 14 bosses, 16 modes, an arena editor and Luau mods.">
 <meta name="theme-color" content="#cdcdcd" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1f262e" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://robertflexx.github.io/tankyard-site/">
@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="img/tankyard-256.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Tank Yard">
-<meta property="og:description" content="A free tank arena for Windows, macOS, Linux and FreeBSD. 111 tanks, 14 bosses, 16 modes and an arena editor.">
+<meta property="og:description" content="A free tank arena for Windows, macOS, Linux and FreeBSD. 112 tanks, 14 bosses, 16 modes and an arena editor.">
 <meta property="og:url" content="https://robertflexx.github.io/tankyard-site/">
 <meta property="og:image" content="https://robertflexx.github.io/tankyard-site/img/og.png">
 <meta property="og:image:width" content="1200">
@@ -79,7 +79,7 @@ try {
     </nav>
     <div class="theme-row">
       <button class="btn small" id="theme" type="button">Light  <span class="key">[F9]</span></button>
-      <span class="status" id="status">111 tanks  ·  14 bosses  ·  16 modes</span>
+      <span class="status" id="status">112 tanks  ·  14 bosses  ·  16 modes</span>
     </div>
     <div class="bottom-row">
       <a class="btn small" href="https://github.com/RobertFlexx/tankyard/tree/main/docs">Guides</a>
@@ -210,10 +210,10 @@ cargo build --locked --release --workspace
       </div>
       <aside class="ws-side" aria-label="Arena Workshop tutorials">
         <div class="ws-tour-picker" role="group" aria-label="Choose a tutorial">
-          <button class="btn small" type="button" data-tour="workshop" aria-pressed="true">Getting started</button>
-          <button class="btn small" type="button" data-tour="logic" aria-pressed="false">Logic gates</button>
+          <button class="btn small" type="button" id="workshop-video" data-tour="workshop" aria-pressed="true">Getting started</button>
+          <button class="btn small" type="button" id="logic-video" data-tour="logic" aria-pressed="false">Logic gates</button>
           <button class="btn small" type="button" id="motions-video" data-tour="motions" aria-pressed="false">Motions</button>
-          <button class="btn small" type="button" data-tour="physics" aria-pressed="false">Physics</button>
+          <button class="btn small" type="button" id="physics-video" data-tour="physics" aria-pressed="false">Physics</button>
           <a id="ws-written" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md">Written guide</a>
         </div>
         <p class="ws-tour-note" id="ws-tour-note">The full editor tour. Choose Logic gates for the vault circuit, Motions for the gatehouse or Physics for push doors and light.</p>
@@ -704,7 +704,7 @@ cargo build --locked --release --workspace
   <section class="page wrap" id="tanks" aria-labelledby="tanks-title">
     <div class="page-head">
       <h2 id="tanks-title">Tank tree</h2>
-      <span class="count" id="tank-count">111 tanks</span>
+      <span class="count" id="tank-count">112 tanks</span>
     </div>
     <div class="tree-grid">
       <div>
