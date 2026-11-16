@@ -43,16 +43,3 @@ to make your own editor tools.
 
 [Bacteria](https://github.com/RobertFlexx/tankyard/blob/main/docs/bacteria.md),
 added in 1.0.1, is a level-55 tank with a ten-second pocket dimension. Its guide
-covers the escape, healing and return.
-
-## Checking workshop changes
-
-Run the numeric reference and logic tests before changing the editor examples:
-
-```sh
-npm test
-```
-
-The Pages workflow runs these checks before publishing. Test layouts in light and
-dark themes, narrow windows and reduced motion too. `tools/build_data.py` rebuilds
-tank and boss geometry from the game's model exporter; see its command help.
