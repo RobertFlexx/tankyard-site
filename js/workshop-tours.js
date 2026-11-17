@@ -45,6 +45,79 @@ const WORKSHOP_CAPTIONS = [
   [152.41, "F1 lists every shortcut."],
 ];
 export const TOURS = {
+  styles: {
+  "title": "Widget styles",
+  "label": "Widget styles tutorial",
+  "duration": 37.7,
+  "poster": "media/widget-styles-poster.jpg",
+  "file": "widget-styles-tutorial",
+  "guide": "widget-styles-tutorial",
+  "track": "media/widget-styles-tutorial.vtt",
+  "note": "The 1.6 preset looks and style options, recorded in the game. The browser editor does not simulate UI triggers.",
+  "chapters": [
+    {
+      "t": 0.0,
+      "title": "Preview",
+      "tab": "Object"
+    },
+    {
+      "t": 5.87,
+      "title": "Looks",
+      "tab": "Object"
+    },
+    {
+      "t": 24.11,
+      "title": "Your own",
+      "tab": "Object"
+    },
+    {
+      "t": 30.7,
+      "title": "Playtest"
+    }
+  ],
+  "captions": [
+    [
+      0.0,
+      "Select a Show UI trigger, then press P to run the logic preview."
+    ],
+    [
+      3.47,
+      "Its widget appears over the canvas as players will see it."
+    ],
+    [
+      5.87,
+      "Twelve preset looks change the colors and style in one click."
+    ],
+    [
+      9.83,
+      "Neon: cut corners, a grid fill and glowing capitals. Shift+P restarts the preview."
+    ],
+    [
+      13.72,
+      "Parchment: a ribbon with a double border and underlined choices."
+    ],
+    [
+      17.62,
+      "Hazard: a slanted, striped panel with outlined capitals and a striped bar."
+    ],
+    [
+      21.51,
+      "Royal: cut corners, a double border and a gradient fill."
+    ],
+    [
+      24.11,
+      "Or set each part yourself: here a tag shape, corner brackets and a glass fill."
+    ],
+    [
+      30.7,
+      "F5 plays the map, and the widget appears in the match."
+    ],
+    [
+      35.0,
+      "Escape returns to the workshop. Scripts set the same options with tankyard.hud."
+    ]
+  ]
+},
   ui: {
   "title": "Menus and waypoints",
   "label": "Menus and waypoints tutorial",

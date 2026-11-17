@@ -8,7 +8,13 @@ const CARD_W = 108;
 const CARD_H = 74;
 const CARD_COLORS = ["#00b2e1", "#a8f075", "#fc7677", "#bf7ff5", "#ffe869"];
 const SHARES = [0.3, 0.5, 0.7, 0.4, 0.6];
-const ABILITY = { CounterParry: "Counter", VolleyParry: "Reprisal", Stasis: "Stasis wave" };
+const ABILITY = {
+  CounterParry: "Counter",
+  VolleyParry: "Reprisal",
+  Stasis: "Stasis wave",
+  Pocket: "Pocket dimension",
+  Rift: "Rift pair",
+};
 
 export function initTree(data) {
   const view = $("#tree-view");

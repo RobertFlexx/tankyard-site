@@ -215,6 +215,7 @@ cargo build --locked --release --workspace
           <button class="btn small" type="button" id="motions-video" data-tour="motions" aria-pressed="false">Motions</button>
           <button class="btn small" type="button" id="physics-video" data-tour="physics" aria-pressed="false">Physics</button>
           <button class="btn small" type="button" id="ui-video" data-tour="ui" aria-pressed="false">Menus and waypoints</button>
+          <button class="btn small" type="button" id="styles-video" data-tour="styles" aria-pressed="false">Widget styles</button>
           <a id="ws-written" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md">Written guide</a>
         </div>
         <p class="ws-tour-note" id="ws-tour-note">The full editor tour. Choose Logic gates for the vault circuit, Motions for the gatehouse or Physics for push doors and light.</p>
@@ -289,6 +290,23 @@ cargo build --locked --release --workspace
         </div>
       </div>
     </div>
+    <section class="motions" id="widget-styles" aria-labelledby="styles-title">
+      <div class="motions-head">
+        <span class="label accent">New in 1.6</span>
+        <h3 id="styles-title">Widget styles</h3>
+        <p class="lead">Give each arena's signs, scores and menus a style of its own. Start from one of twelve preset looks, or set the shape, border, fill, lettering, bar and buttons yourself.</p>
+        <div class="links">
+          <a class="btn small primary" href="#styles-video" data-watch-tour="styles">Watch the styles video</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/widget-styles-tutorial.md">Written tutorial</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/modding.md#hud-widgets">Styles in Luau</a>
+        </div>
+      </div>
+      <div class="ws-under">
+        <div class="panel"><span class="label accent">Pick a look</span><p>Neon, Arcade, Parchment, Terminal, Royal, Glass, Hazard, Sticker, Frost, Ember and Jungle each set the colors and style in one click. Theme goes back to the player's own colors.</p></div>
+        <div class="panel"><span class="label accent">Shape it</span><p>Rounded, square, cut-corner, slanted, tag and ribbon panels. Borders can be thick, double, dashed or corner brackets, and fills can be a gradient, glass, stripes, a grid or dots.</p></div>
+        <div class="panel"><span class="label accent">Letter it</span><p>Shadowed, block, outlined or glowing letters, capitals and a title color of their own. Bars can be flat, thin, striped, glowing or a row of pips, and choices boxed, outlined or underlined.</p></div>
+      </div>
+    </section>
     <section class="motions" id="interfaces" aria-labelledby="interfaces-title">
       <div class="motions-head">
         <span class="label accent">New in 1.5</span>
@@ -788,7 +806,7 @@ cargo build --locked --release --workspace
         </div>
         <div class="way">
           <h3>Community server</h3>
-          <p><b>Host server → Community server</b> starts a server as its own process, so it keeps running while you play anywhere. Your enabled mods run on it; players download nothing. The same server runs without the game on a spare PC, a VPS or a Raspberry Pi.</p>
+          <p><b>Host server → Community server</b> starts a server as its own process, so it keeps running while you play anywhere. Your enabled mods run on it; players download nothing. The same server runs without the game on a spare PC, a VPS or a Raspberry Pi. <b>Change map…</b> hosts a built-in arena, a map you saved in the workshop or a map pack from your library.</p>
         </div>
         <div class="way">
           <h3>Your own hostname</h3>
