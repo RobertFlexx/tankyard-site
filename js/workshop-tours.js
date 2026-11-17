@@ -45,6 +45,82 @@ const WORKSHOP_CAPTIONS = [
   [152.41, "F1 lists every shortcut."],
 ];
 export const TOURS = {
+  ui: {
+  "title": "Menus and waypoints",
+  "label": "Menus and waypoints tutorial",
+  "duration": 34.233984,
+  "poster": "media/ui-poster.jpg",
+  "file": "ui-tutorial",
+  "guide": "ui-tutorial",
+  "track": "media/ui-tutorial.vtt",
+  "note": "The 1.5 designer and Arcade Hall shop, recorded in the game. The browser editor does not simulate these UI triggers.",
+  "chapters": [
+    {
+      "t": 0,
+      "title": "Designer",
+      "tab": "Object"
+    },
+    {
+      "t": 12,
+      "title": "Placement",
+      "tab": "Object"
+    },
+    {
+      "t": 18,
+      "title": "Playtest"
+    },
+    {
+      "t": 21.8,
+      "title": "Waypoint"
+    },
+    {
+      "t": 28.3,
+      "title": "Reward"
+    }
+  ],
+  "captions": [
+    [
+      0,
+      "Arcade Hall open in the Arena Workshop. Select its Show UI trigger."
+    ],
+    [
+      3,
+      "The live preview shows six choices in a grid. Replay entrance runs its animation."
+    ],
+    [
+      7,
+      "{name} becomes the viewer\u2019s name. {cause} names the tank that set it off."
+    ],
+    [
+      12,
+      "Choose a screen position, an area in the arena, or the tank that set it off."
+    ],
+    [
+      18,
+      "Point at the shop and press Shift+F5 to playtest from here."
+    ],
+    [
+      21.8,
+      "Vault guide sends a signal that shows a personal waypoint."
+    ],
+    [
+      24,
+      "The arrow points toward the vault, clear of the normal HUD."
+    ],
+    [
+      26,
+      "Escape returns to the editor. Start another playtest to try another choice."
+    ],
+    [
+      28.3,
+      "+300 points rewards the player who chose it. The click does not fire a shot."
+    ],
+    [
+      31,
+      "Check lists map issues. Save keeps a project; Export makes a shareable pack."
+    ]
+  ]
+},
   workshop: { title: "Getting started", label: "Arena Workshop tour", duration: 157.23,
     poster: "media/tutorial-poster.jpg", file: "arena-workshop-tutorial",
     guide: "map-editor",

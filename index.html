@@ -214,6 +214,7 @@ cargo build --locked --release --workspace
           <button class="btn small" type="button" id="logic-video" data-tour="logic" aria-pressed="false">Logic gates</button>
           <button class="btn small" type="button" id="motions-video" data-tour="motions" aria-pressed="false">Motions</button>
           <button class="btn small" type="button" id="physics-video" data-tour="physics" aria-pressed="false">Physics</button>
+          <button class="btn small" type="button" id="ui-video" data-tour="ui" aria-pressed="false">Menus and waypoints</button>
           <a id="ws-written" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md">Written guide</a>
         </div>
         <p class="ws-tour-note" id="ws-tour-note">The full editor tour. Choose Logic gates for the vault circuit, Motions for the gatehouse or Physics for push doors and light.</p>
@@ -288,6 +289,24 @@ cargo build --locked --release --workspace
         </div>
       </div>
     </div>
+    <section class="motions" id="interfaces" aria-labelledby="interfaces-title">
+      <div class="motions-head">
+        <span class="label accent">New in 1.5</span>
+        <h3 id="interfaces-title">Signs, menus and waypoints</h3>
+        <p class="lead">Build a six-choice shop, mark the player who opens a vault, or point toward a moving goal. The workshop's UI designer previews the same widgets players see in a match.</p>
+        <div class="links">
+          <a class="btn small primary" href="#ui-video" data-watch-tour="ui">Watch the UI video</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/ui-tutorial.md">Written tutorial</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/tree/main/mods/arcade_hall">Arcade Hall example</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/modding.md#hud-widgets">Widgets in Luau</a>
+        </div>
+      </div>
+      <div class="ws-under">
+        <div class="panel"><span class="label accent">Place it</span><p>Keep a widget on screen, float it over an area or follow the tank that set it off. Area markers follow their group's motion, and offscreen arrows keep the target in reach.</p></div>
+        <div class="panel"><span class="label accent">Wire it</span><p>Six choices send signals into the map's logic. Arrange them in a row, column or grid; use 32 map UI slots for scores, timers, signs and menus.</p></div>
+        <div class="panel"><span class="label accent">Make it yours</span><p>Pick colors, icons, glow and an entrance. <code>{name}</code> names the viewer and <code>{cause}</code> names the tank that set it off. Arcade Hall includes a working shop and vault waypoint.</p></div>
+      </div>
+    </section>
     <section class="motions" id="motions" aria-labelledby="motions-title">
       <div class="motions-head">
         <span class="label accent">New in 1.0</span>
