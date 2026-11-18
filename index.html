@@ -216,6 +216,7 @@ cargo build --locked --release --workspace
           <button class="btn small" type="button" id="physics-video" data-tour="physics" aria-pressed="false">Physics</button>
           <button class="btn small" type="button" id="ui-video" data-tour="ui" aria-pressed="false">Menus and waypoints</button>
           <button class="btn small" type="button" id="styles-video" data-tour="styles" aria-pressed="false">Widget styles</button>
+          <button class="btn small" type="button" id="boards-video" data-tour="boards" aria-pressed="false">Boards</button>
           <a id="ws-written" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md">Written guide</a>
         </div>
         <p class="ws-tour-note" id="ws-tour-note">The full editor tour. Choose Logic gates for the vault circuit, Motions for the gatehouse or Physics for push doors and light.</p>
@@ -290,6 +291,23 @@ cargo build --locked --release --workspace
         </div>
       </div>
     </div>
+    <section class="motions" id="boards" aria-labelledby="boards-title">
+      <div class="motions-head">
+        <span class="label accent">New in 1.7</span>
+        <h3 id="boards-title">Boards</h3>
+        <p class="lead">Build control panels, keypads and whole computers out of UI. A board is a grid of buttons, screens, digits, lights and meters that players click during the match.</p>
+        <div class="links">
+          <a class="btn small primary" href="#boards-video" data-watch-tour="boards">Watch the boards video</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/boards-tutorial.md">Written tutorial</a>
+          <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/modding.md#boards">Boards in Luau</a>
+        </div>
+      </div>
+      <div class="ws-under">
+        <div class="panel"><span class="label accent">Lay it out</span><p>Up to 128 cells on a grid of up to 32 by 32 squares. Click a square to add a cell, drag a cell to move it and drag its corner to resize it. Add number keys lays out a keypad in one click.</p></div>
+        <div class="panel"><span class="label accent">Wire it</span><p>Each button signals its own channel, and the player who clicked is the tank that set it off. Buttons and lights light up from a counter, one bit of a counter or a group. Meters fill from a counter.</p></div>
+        <div class="panel"><span class="label accent">Count big</span><p>255 counters and 255 channels, numbers up to ±1,073,741,823, bit math and powers. Counter fields can add commas, show binary or hex, or join several counters into one long number.</p></div>
+      </div>
+    </section>
     <section class="motions" id="widget-styles" aria-labelledby="styles-title">
       <div class="motions-head">
         <span class="label accent">New in 1.6</span>

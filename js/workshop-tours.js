@@ -45,6 +45,70 @@ const WORKSHOP_CAPTIONS = [
   [152.41, "F1 lists every shortcut."],
 ];
 export const TOURS = {
+  boards: {
+  "title": "Boards",
+  "label": "Boards tutorial",
+  "duration": 42.63,
+  "poster": "media/boards-poster.jpg",
+  "file": "boards-tutorial",
+  "guide": "boards-tutorial",
+  "track": "media/boards-tutorial.vtt",
+  "note": "The 1.7 board designer and a switch panel that opens a vault, recorded in the game. The browser editor does not simulate UI triggers.",
+  "chapters": [
+    {
+      "t": 0.0,
+      "title": "Board",
+      "tab": "Object"
+    },
+    {
+      "t": 12.88,
+      "title": "Preview",
+      "tab": "Object"
+    },
+    {
+      "t": 25.76,
+      "title": "Playtest"
+    }
+  ],
+  "captions": [
+    [
+      0.0,
+      "A Show UI widget can be a board: a grid of buttons, screens, digits, lights and meters."
+    ],
+    [
+      4.05,
+      "In the designer, click a square to add a cell, drag a cell to move it, or drag its corner to resize it."
+    ],
+    [
+      9.28,
+      "Each button signals its own channel and lights up from one bit of counter 1."
+    ],
+    [
+      12.88,
+      "P runs the logic preview, with the board over the canvas."
+    ],
+    [
+      15.18,
+      "Four receivers flip counter 1's bits. 8 and 4 make 1100, and the vault stays shut."
+    ],
+    [
+      19.76,
+      "Only 1011 opens it: 8, 2 and 1 on, 4 off."
+    ],
+    [
+      25.76,
+      "F5 plays the map. Everyone clicks the same board, and it stays up after each click."
+    ],
+    [
+      32.28,
+      "Clicking 8, 2 and 1 in the match opens the vault for every player."
+    ],
+    [
+      39.93,
+      "Escape returns to the workshop. The boards tutorial builds this panel step by step."
+    ]
+  ]
+},
   styles: {
   "title": "Widget styles",
   "label": "Widget styles tutorial",
