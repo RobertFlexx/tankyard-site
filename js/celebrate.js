@@ -382,8 +382,9 @@ function startStage(tanks, bosses) {
   readColors();
   still();
   addEventListener("resize", () => {
+    // Resizing clears the canvas, so paint it whether or not it's playing.
     fit();
-    if (reducedMotion.matches) still();
+    draw(reducedMotion.matches ? WINDUP * 0.8 : clock);
   });
   document.addEventListener("tankyard:theme", () => {
     readColors();
