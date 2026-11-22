@@ -7,6 +7,11 @@ bosses, and game modes. Build and playtest your own map in the interactive Arena
 
 [Visit the site](https://robertflexx.github.io/tankyard-site/) · [Game repository](https://github.com/RobertFlexx/tankyard)
 
+**Tank Yard 2.0** has its own section at the top of the page: the Siege Engine's
+cannon in action, what changed, a parade of the redrawn bosses and the road from
+the first builds. A first visit sets off a burst of arena shapes that form a
+giant 2.0. Visitors who prefer reduced motion get the same content without it.
+
 Try the Arena Workshop in your browser. Draw walls, add pads, then press
 **Playtest** to drive around your map. **Pan** or Space-drag moves the view.
 Your draft can be saved in this browser.

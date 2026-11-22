@@ -1,7 +1,7 @@
 // Starts each part of the page. A part that fails leaves the rest working.
 import { $, $$, loadJSON, wireCopyButtons, typing, clamp, reducedMotion } from "./util.js";
 import { initRelease } from "./release.js";
-import { initCelebration } from "./celebrate.js";
+import { initCelebration, initTwoPointOh } from "./celebrate.js";
 import { initArena } from "./arena.js";
 import { initInstall } from "./install.js";
 import { initWorkshop } from "./workshop.js";
@@ -59,7 +59,7 @@ function onScroll() {
   pageBg.style.opacity = String(clamp(scrollY / (innerHeight * 0.7), 0, 1));
   let found = null;
   targets.forEach((section, i) => {
-    if (section && section.getBoundingClientRect().top <= 140) found = tabs[i];
+    if (section && !section.hidden && section.getBoundingClientRect().top <= 140) found = tabs[i];
   });
   // At the very bottom, the last section wins even if it's short.
   if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) found = tabs[tabs.length - 1];
@@ -118,6 +118,7 @@ const [game, bosses, maps] = await Promise.all(
   ),
 );
 if (bosses) boot("bosses", () => initBosses(bosses));
+if (bosses && tanks) boot("2.0", () => initTwoPointOh(tanks, bosses));
 if (game && maps) boot("modes", () => initModes(game, maps));
 if (game && tanks) boot("practice", () => initPractice(game, tanks));
 if (game) {

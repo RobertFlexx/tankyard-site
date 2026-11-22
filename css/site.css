@@ -3277,18 +3277,18 @@ h3 {
   margin-top: 18px;
 }
 
-/* Tank Yard 1.0: the title's tag, the thank-you and the shape burst. */
+/* Tank Yard's milestones: the title's tag, the thank-you and the shape burst. */
 .menu h1 .title-text {
   position: relative;
   display: inline-block;
 }
 .milestone {
   position: absolute;
-  top: -2px;
+  top: -6px;
   left: 100%;
   margin-left: 10px;
-  padding: 4px 8px 5px;
-  font-size: 15px;
+  padding: 5px 10px 6px;
+  font-size: 19px;
   line-height: 1;
   color: var(--card-ink);
   white-space: nowrap;
@@ -4176,5 +4176,309 @@ h3 {
 @media (max-width: 760px) {
   .fx-tutorial-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Tank Yard 2.0 */
+.menu .two-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--card-ink);
+  text-decoration: none;
+  background: var(--amber);
+  border: 2px solid var(--outline);
+}
+.menu .two-banner:hover {
+  filter: brightness(1.07);
+}
+.menu .two-banner[hidden] {
+  display: none;
+}
+.two-banner b {
+  font-size: 21px;
+  line-height: 1;
+}
+.two-banner small {
+  margin-left: auto;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.two {
+  display: grid;
+  gap: 18px;
+}
+.two[hidden],
+.btn.two-only[hidden] {
+  display: none;
+}
+.two-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  padding: 0;
+  overflow: hidden;
+  border-color: var(--accent);
+  border-width: 3px;
+}
+.two-copy {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 12px;
+  padding: 34px 30px;
+}
+.two-copy h2 {
+  margin: 0;
+  font-size: clamp(34px, 4.6vw, 54px);
+  line-height: 1.02;
+}
+.two-copy h2 b {
+  display: inline-block;
+  padding: 2px 12px 4px;
+  color: var(--card-ink);
+  background: var(--amber);
+  border: 3px solid var(--outline);
+  transform: rotate(-4deg);
+}
+.two-copy p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+}
+.two-copy .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+#two-stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 340px;
+  border-left: 3px solid var(--outline);
+}
+.two-stats {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.two-stats li {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 12px 6px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  background: var(--panel);
+  border: 2px solid var(--line);
+}
+.two-stats b {
+  font-size: 26px;
+  line-height: 1.1;
+  color: var(--text);
+}
+.two-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+.two-card {
+  display: grid;
+  grid-column: span 2;
+  align-content: start;
+  gap: 6px;
+  padding: 16px 18px;
+  margin: 0;
+}
+.two-card h3 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.2;
+}
+.two-card p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.two-card.boss-card,
+.two-card.siege-card {
+  grid-column: span 3;
+  border-color: var(--red);
+}
+.two-parade-panel {
+  display: grid;
+  gap: 10px;
+  padding: 16px 0 12px;
+  overflow: hidden;
+}
+.two-parade-panel > .label {
+  padding: 0 18px;
+}
+.two-parade {
+  overflow: hidden;
+}
+.two-strip {
+  display: flex;
+  gap: 8px;
+  width: max-content;
+}
+.two-boss {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 136px;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+.two-boss svg {
+  width: 112px;
+  height: 92px;
+}
+.two-road {
+  display: grid;
+  gap: 14px;
+  padding: 18px 22px;
+}
+.two-road ol {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.two-road li {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 18px 8px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 3px solid var(--line);
+}
+.two-road li::before {
+  position: absolute;
+  top: -8px;
+  left: 0;
+  width: 13px;
+  height: 13px;
+  content: "";
+  background: var(--accent);
+  border: 2px solid var(--outline);
+  border-radius: 50%;
+}
+.two-road li b {
+  font-size: 20px;
+  color: var(--text);
+}
+.two-road li time {
+  font-size: 11px;
+}
+.two-road li.now {
+  border-top-color: var(--amber);
+}
+.two-road li.now::before {
+  width: 17px;
+  height: 17px;
+  top: -10px;
+  background: var(--amber);
+}
+.two-road > p {
+  margin: 0;
+  font-size: 14px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .two-strip {
+    animation: two-parade 54s linear infinite;
+  }
+  .two-parade:hover .two-strip,
+  .two-parade:focus-within .two-strip {
+    animation-play-state: paused;
+  }
+}
+@keyframes two-parade {
+  to {
+    transform: translateX(calc(-50% - 4px));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-celebrate] {
+    display: none;
+  }
+  .two-parade {
+    overflow-x: auto;
+  }
+  .two-boss[aria-hidden="true"] {
+    display: none;
+  }
+}
+@media (max-width: 980px) {
+  .two-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #two-stage {
+    grid-row: 1;
+    height: 260px;
+    min-height: 0;
+    border-left: 0;
+    border-bottom: 3px solid var(--outline);
+  }
+  .two-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .two-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .two-card,
+  .two-card.boss-card,
+  .two-card.siege-card {
+    grid-column: auto;
+  }
+}
+@media (max-width: 720px) {
+  .two-road ol {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-left: 10px;
+    border-left: 3px solid var(--line);
+  }
+  .two-road li {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: baseline;
+    padding: 6px 0 6px 14px;
+    border-top: 0;
+  }
+  .two-road li::before {
+    top: 11px;
+    left: -19px;
+  }
+  .two-road li.now::before {
+    top: 9px;
+    left: -21px;
+  }
+}
+@media (max-width: 560px) {
+  .two-copy {
+    padding: 22px 16px;
+  }
+  #two-stage {
+    height: 200px;
+  }
+  .two-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .two-stats b {
+    font-size: 22px;
   }
 }

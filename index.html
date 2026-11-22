@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tank Yard</title>
-<meta name="description" content="Tank Yard is a free, open-source tank arena for Windows, macOS, Linux and FreeBSD: 112 tanks, 14 bosses, 16 modes, an arena editor and Luau mods.">
+<meta name="description" content="Tank Yard is a free, open-source tank arena for Windows, macOS, Linux and FreeBSD: 113 tanks, 14 bosses, 16 modes, an arena editor and Luau mods.">
 <meta name="theme-color" content="#cdcdcd" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1f262e" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://robertflexx.github.io/tankyard-site/">
@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="img/tankyard-256.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Tank Yard">
-<meta property="og:description" content="A free tank arena for Windows, macOS, Linux and FreeBSD. 112 tanks, 14 bosses, 16 modes and an arena editor.">
+<meta property="og:description" content="A free tank arena for Windows, macOS, Linux and FreeBSD. 113 tanks, 14 bosses, 16 modes and an arena editor.">
 <meta property="og:url" content="https://robertflexx.github.io/tankyard-site/">
 <meta property="og:image" content="https://robertflexx.github.io/tankyard-site/img/og.png">
 <meta property="og:image:width" content="1200">
@@ -41,14 +41,19 @@ try {
 <header class="menu" id="top">
   <div class="fps" aria-hidden="true"><span id="fps">60</span> FPS</div>
   <a class="btn small credits-link" href="#credits">Credits</a>
-  <h1><span class="title-text">Tank Yard<span class="milestone" id="milestone" hidden>1.0</span></span></h1>
+  <h1><span class="title-text">Tank Yard<span class="milestone" id="milestone" hidden>2.0</span></span></h1>
   <p class="subtitle">A free tank arena for Windows, macOS, Linux and FreeBSD</p>
   <div class="tank-slot" id="tank-slot" aria-hidden="true"></div>
 
   <div class="pane">
+    <a class="two-banner two-only" href="#two" hidden>
+      <b>2.0</b>
+      <span>The biggest update yet</span>
+      <small>See what's new ›</small>
+    </a>
     <span class="label" id="release-label">Latest release</span>
     <a class="field release-field" id="release-field" href="#whats-new" aria-describedby="release-label">
-      <span><span class="version" id="release-version">v1.0.0</span><span class="date" id="release-date">Nov 13, 2026</span></span>
+      <span><span class="version" id="release-version">v2.0.0</span><span class="date" id="release-date">Nov 21, 2026</span></span>
       <span class="notes">What's new ›</span>
     </a>
 
@@ -79,7 +84,7 @@ try {
     </nav>
     <div class="theme-row">
       <button class="btn small" id="theme" type="button">Light  <span class="key">[F9]</span></button>
-      <span class="status" id="status">112 tanks  ·  14 bosses  ·  16 modes</span>
+      <span class="status" id="status">113 tanks  ·  14 bosses  ·  16 modes</span>
     </div>
     <div class="bottom-row">
       <a class="btn small" href="https://github.com/RobertFlexx/tankyard/tree/main/docs">Guides</a>
@@ -90,8 +95,8 @@ try {
 
   <a class="badge" id="release-badge" href="#whats-new">
     <img src="img/tankyard.svg" alt="" width="44" height="44">
-    <strong id="badge-title">Tank Yard v1.0.0</strong>
-    <span id="badge-text">Tank Yard 1.0 is here: sliding doors, lifts and moving cover glide in the workshop, and lights glow like real lamps.</span>
+    <strong id="badge-title">Tank Yard v2.0.0</strong>
+    <span id="badge-text">Tank Yard 2.0 is here: every boss remade, tanks rebuilt and rebalanced, workshop layers, live logic gates and better parties.</span>
   </a>
 
   <div class="hud" id="hud" hidden aria-hidden="true">
@@ -106,6 +111,7 @@ try {
   </div>
   <div class="tabs-bar" id="tabs-bar">
     <nav class="wrap tabs" id="tabs" aria-label="Pages">
+      <a class="btn two-only" href="#two" hidden>2.0</a>
       <a class="btn" href="#install">Install</a>
       <a class="btn" href="#workshop">Arena Workshop</a>
       <a class="btn" href="#tanks">Tank tree</a>
@@ -117,6 +123,93 @@ try {
       <a class="btn" href="#whats-new">What's new</a>
     </nav>
   </div>
+
+  <section class="page wrap two" id="two" aria-labelledby="two-title" hidden>
+    <div class="panel two-hero">
+      <div class="two-copy">
+        <span class="label accent">The biggest update yet</span>
+        <h2 id="two-title">Tank Yard <b>2.0</b></h2>
+        <p>Every boss remade. Tanks rebuilt and rebalanced. Workshop layers, live logic gates and better parties, with fixes and polish across the whole game, in and out of the editor.</p>
+        <div class="links">
+          <a class="btn primary" href="#install">Download 2.0</a>
+          <a class="btn" href="#whats-new">What's new</a>
+          <button class="btn" type="button" data-celebrate>Celebrate</button>
+        </div>
+      </div>
+      <canvas id="two-stage" aria-hidden="true"></canvas>
+    </div>
+
+    <ul class="two-stats" aria-label="Tank Yard 2.0 in numbers">
+      <li><b id="two-tanks">113</b> tanks</li>
+      <li><b id="two-bosses">14</b> bosses remade</li>
+      <li><b>16</b> game modes</li>
+      <li><b>100</b> workshop layers</li>
+      <li><b>255</b> logic channels</li>
+      <li><b>53</b> releases</li>
+    </ul>
+
+    <div class="two-grid">
+      <article class="panel two-card boss-card">
+        <span class="label warm">Bosses</span>
+        <h3>All fourteen, remade</h3>
+        <p>One clean look for every boss, and attacks you can read. Lanes, rings and charges all show before they land, and each boss's core glows brighter as it winds up.</p>
+      </article>
+      <article class="panel two-card siege-card">
+        <span class="label warm">Siege Engine</span>
+        <h3>One shot, one tank</h3>
+        <p>A red line, a second and a half to move, then a giant round that destroys any tank it reaches. Get behind a wall, or time a parry and send it back.</p>
+      </article>
+      <article class="panel two-card">
+        <span class="label accent">Fair fights</span>
+        <h3>Bosses that fit your party</h3>
+        <p>Boss health and swarms follow who's in the arena, so a fight is as tense for one veteran as for a full party. Everyone who helped shares the reward.</p>
+      </article>
+      <article class="panel two-card">
+        <span class="label accent">Tanks</span>
+        <h3>Rebuilt and rebalanced</h3>
+        <p>Messy tanks have clean new layouts with proper turret mounts. Every tier was retuned from thousands of simulated duels.</p>
+      </article>
+      <article class="panel two-card">
+        <span class="label accent">Workshop</span>
+        <h3>Layers</h3>
+        <p>Sort a busy map onto 100 layers. Everything else fades and locks, and clicking again reaches what's stacked underneath.</p>
+      </article>
+      <article class="panel two-card">
+        <span class="label accent">Logic</span>
+        <h3>Live gates and circuits</h3>
+        <p>New gates, memory and a Circuits palette. Gates that follow their inputs wire into adders, latches and registers, and on up to whole computers.</p>
+      </article>
+      <article class="panel two-card">
+        <span class="label accent">Parties</span>
+        <h3>Play together, properly</h3>
+        <p>See your friends' health and levels, follow arrows to allies across the map, see who comes and goes, and let the host remove a player.</p>
+      </article>
+      <article class="panel two-card">
+        <span class="label accent">Gatewright</span>
+        <h3>Rifts you can read</h3>
+        <p>Rifts opened by an opponent now burn red and orange. Rounds glide through every rift smoothly instead of jumping.</p>
+      </article>
+    </div>
+
+    <div class="panel two-parade-panel">
+      <span class="label accent">Meet the bosses</span>
+      <div class="two-parade" id="two-parade"></div>
+    </div>
+
+    <div class="panel two-road">
+      <span class="label accent">The road to 2.0</span>
+      <ol>
+        <li><b>0.2</b><span>First public builds</span><time datetime="2026-10-17">Oct 17</time></li>
+        <li><b>0.9</b><span>Lua mods and arenas of twenty</span><time datetime="2026-11-07">Nov 7</time></li>
+        <li><b>1.0</b><span>Doors, lifts and real lights</span><time datetime="2026-11-13">Nov 13</time></li>
+        <li><b>1.3</b><span>Physics, darkness and paths</span><time datetime="2026-11-16">Nov 16</time></li>
+        <li><b>1.6</b><span>Gatewright and hosting your maps</span><time datetime="2026-11-17">Nov 17</time></li>
+        <li><b>1.7</b><span>Boards and bigger logic</span><time datetime="2026-11-18">Nov 18</time></li>
+        <li class="now"><b>2.0</b><span>Bosses, balance, layers and logic</span><time datetime="2026-11-21">Nov 21</time></li>
+      </ol>
+      <p>Thank you to everyone who played, hosted a server, built a map, wrote a mod or reported a bug.</p>
+    </div>
+  </section>
 
   <section class="page wrap" id="install" aria-labelledby="install-title">
     <div class="page-head">
@@ -759,7 +852,7 @@ cargo build --locked --release --workspace
   <section class="page wrap" id="tanks" aria-labelledby="tanks-title">
     <div class="page-head">
       <h2 id="tanks-title">Tank tree</h2>
-      <span class="count" id="tank-count">112 tanks</span>
+      <span class="count" id="tank-count">113 tanks</span>
     </div>
     <div class="tree-grid">
       <div>
@@ -902,17 +995,17 @@ cargo build --locked --release --workspace
   <section class="page wrap" id="whats-new" aria-labelledby="news-title">
     <div class="page-head">
       <h2 id="news-title">What's new</h2>
-      <span class="count" id="news-count">Tank Yard v1.0.0</span>
+      <span class="count" id="news-count">Tank Yard v2.0.0</span>
       <div class="actions"><a class="btn small" id="news-link" href="https://github.com/RobertFlexx/tankyard/releases/latest">Release page</a></div>
     </div>
     <div class="news-grid">
       <div class="news-main">
         <div class="panel milestone-card" id="milestone-card" hidden>
-          <span class="label accent">Tank Yard 1.0</span>
-          <p><strong>Tank Yard leaves its 0.x releases behind.</strong> Thank you to everyone who played, hosted a server, built a map, wrote a mod or reported a bug along the way.</p>
+          <span class="label accent">Tank Yard 2.0</span>
+          <p><strong>The biggest update Tank Yard has had.</strong> Thank you to everyone who played, hosted a server, built a map, wrote a mod or reported a bug along the way.</p>
           <div class="links">
-            <a class="btn small" href="#motions">New in the workshop</a>
-            <button class="btn small" type="button" id="celebrate">Celebrate again</button>
+            <a class="btn small" href="#two">See what's in 2.0</a>
+            <button class="btn small" type="button" id="celebrate" data-celebrate>Celebrate again</button>
           </div>
         </div>
         <article class="panel notes" id="notes"><p class="muted">Loading the release notes…</p></article>
