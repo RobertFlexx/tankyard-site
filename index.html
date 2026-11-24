@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tank Yard</title>
-<meta name="description" content="Tank Yard is a free, open-source tank arena for Windows, macOS, Linux and FreeBSD: 113 tanks, 14 bosses, 16 modes, an arena editor and Luau mods.">
+<meta name="description" content="Tank Yard is a free, open-source tank arena for Windows, macOS, Linux and FreeBSD: 113 tanks, 15 bosses, 16 modes, an arena editor and Luau mods.">
 <meta name="theme-color" content="#cdcdcd" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1f262e" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://robertflexx.github.io/tankyard-site/">
@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="img/tankyard-256.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Tank Yard">
-<meta property="og:description" content="A free tank arena for Windows, macOS, Linux and FreeBSD. 113 tanks, 14 bosses, 16 modes and an arena editor.">
+<meta property="og:description" content="A free tank arena for Windows, macOS, Linux and FreeBSD. 113 tanks, 15 bosses, 16 modes and an arena editor.">
 <meta property="og:url" content="https://robertflexx.github.io/tankyard-site/">
 <meta property="og:image" content="https://robertflexx.github.io/tankyard-site/img/og.png">
 <meta property="og:image:width" content="1200">
@@ -84,7 +84,7 @@ try {
     </nav>
     <div class="theme-row">
       <button class="btn small" id="theme" type="button">Light  <span class="key">[F9]</span></button>
-      <span class="status" id="status">113 tanks  ·  14 bosses  ·  16 modes</span>
+      <span class="status" id="status">113 tanks  ·  15 bosses  ·  16 modes</span>
     </div>
     <div class="bottom-row">
       <a class="btn small" href="https://github.com/RobertFlexx/tankyard/tree/main/docs">Guides</a>
@@ -141,7 +141,7 @@ try {
 
     <ul class="two-stats" aria-label="Tank Yard 2.0 in numbers">
       <li><b id="two-tanks">113</b> tanks</li>
-      <li><b id="two-bosses">14</b> bosses remade</li>
+      <li><b id="two-bosses">15</b> bosses</li>
       <li><b>16</b> game modes</li>
       <li><b>100</b> workshop layers</li>
       <li><b>255</b> logic channels</li>
@@ -151,7 +151,7 @@ try {
     <div class="two-grid">
       <article class="panel two-card boss-card">
         <span class="label warm">Bosses</span>
-        <h3>All fourteen, remade</h3>
+        <h3>Fifteen bosses to face</h3>
         <p>One clean look for every boss, and attacks you can read. Lanes, rings and charges all show before they land, and each boss's core glows brighter as it winds up.</p>
       </article>
       <article class="panel two-card siege-card">
@@ -405,7 +405,7 @@ cargo build --locked --release --workspace
       <div class="motions-head">
         <span class="label accent">New in 1.6</span>
         <h3 id="styles-title">Widget styles</h3>
-        <p class="lead">Give each arena's signs, scores and menus a style of its own. Start from one of twelve preset looks, or set the shape, border, fill, lettering, bar and buttons yourself.</p>
+        <p class="lead">Give each arena's signs, scores and menus a style of its own. Start from one of sixteen preset looks in the game, or set the shape, border, fill, lettering, bar and buttons yourself.</p>
         <div class="links">
           <a class="btn small primary" href="#styles-video" data-watch-tour="styles">Watch the styles video</a>
           <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/widget-styles-tutorial.md">Written tutorial</a>
@@ -621,7 +621,7 @@ cargo build --locked --release --workspace
       <div class="motions-head">
         <span class="label accent">New in 1.1</span>
         <h3 id="effects-title">Effects, launch pads and sounds</h3>
-        <p class="lead">Decor can float, sway, pulse, tremble and circle, take on a color, and grow or shrink. Launch pads fling tanks across the arena, and triggers can shake players' views and play sounds. The animations, colors and sounds on this page use the game's own formulas.</p>
+        <p class="lead">Decor can float, sway, pulse, tremble and circle, take on a color, and grow or shrink. Launch pads fling tanks across the arena, and triggers can shake players' views and play sounds. The animations, colors and sounds on this page use the game's own formulas. Tank Yard 2.0.5 also adds twenty particle presets, weighted and shuffled random signals, Chance conditions, and sound pitch, variation, repeats and audiences. See the <a href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md">editor guide</a> for the full controls.</p>
         <div class="links">
           <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/map-editor.md#effects">Effects in the workshop guide</a>
           <a class="btn small" href="https://github.com/RobertFlexx/tankyard/blob/main/docs/effects-tutorial.md">Build the effects room</a>
@@ -826,8 +826,8 @@ cargo build --locked --release --workspace
         </div>
         <div class="panel motions-card" id="fx-sounds">
           <span class="label accent">Play sound</span>
-          <h4>Eight sounds, heard by distance</h4>
-          <p>A Play sound trigger plays at the middle of its area. Players nearby hear it at full volume and it fades out a little past the edge of the screen, at each player's Effects volume. These are the game's own sounds, made in your browser the same way.</p>
+          <h4>Try the eight classic sounds</h4>
+          <p>A Play sound trigger plays at the middle of its area. Players nearby hear it at full volume and it fades out a little past the edge of the screen, at each player's Effects volume. These are the game's eight classic sounds, made in your browser the same way. The game now has 28, with customizable pitch, variation, repeats and audience.</p>
           <canvas class="fx-wave" id="fx-wave" aria-hidden="true"></canvas>
           <div class="chips fx-sound-list" role="group" aria-label="Sound">
             <button class="btn" type="button" data-sound="Chime" aria-pressed="false">Chime</button>
@@ -876,9 +876,9 @@ cargo build --locked --release --workspace
   <section class="page wrap" id="bosses" aria-labelledby="bosses-title">
     <div class="page-head">
       <h2 id="bosses-title">Bosses</h2>
-      <span class="count">14 bosses</span>
+      <span class="count">15 bosses</span>
     </div>
-    <p class="lead">One random boss can arrive in Free For All, Two Teams, Four Teams, Maze and Random Events, after a one-minute grace period. An alarm sounds, a banner names it, and when it falls the banner names the tank that did the most damage. Boss Rush sends six waves.</p>
+    <p class="lead">One random boss can arrive in Free For All, Two Teams, Four Teams, Maze and Random Events, after a one-minute grace period. An alarm sounds, a banner names it, and when it falls the banner names the tank that did the most damage. Boss Rush offers the classic six-wave lineup or a custom selection. Railgunner, added in 2.0.5, is a rare long-range hunter: get beneath its barrel or parry its heavy fire.</p>
     <div class="boss-grid" id="boss-grid"></div>
   </section>
 
@@ -894,7 +894,7 @@ cargo build --locked --release --workspace
 
     <div class="page-head" id="practice" style="margin-top:46px">
       <h2>Practice <span class="hint-key muted" style="font-size:16px">[F6]</span></h2>
-      <span class="count" id="practice-count">11 challenges</span>
+      <span class="count" id="practice-count">12 challenges</span>
     </div>
     <p class="lead">Short offline challenges with a fixed tank and a time limit. F6 opens them from the menu or during a game.</p>
     <div class="practice-grid" id="practice-grid"></div>

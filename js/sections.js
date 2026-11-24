@@ -3,6 +3,8 @@ import { $, $$, h } from "./util.js";
 import { svgModel } from "./models.js";
 
 export function initBosses(data) {
+  const count = $("#bosses .count");
+  if (count) count.textContent = `${data.bosses.length} bosses`;
   const grid = $("#boss-grid");
   grid.innerHTML = "";
   for (const boss of data.bosses) {
